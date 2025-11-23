@@ -1,6 +1,6 @@
 {
-  "token": "MTIzOTI0ODE3NDgzNzc5NjkyNA.GoiG_j.A_Sdn2Zx7-FZn8z0QNZI0jkVWgOuh-MWx3clbg",
+  "token": "YOUR_TOKEN_BOT_HERE",
   "prefix": "!",
-  "owner_id": "1060962447047016528",
-  "startscreen_type": "UI"
+  "owner_id": "YOUR_DISCORD_ID_HERE",
+  "startscreen_type": "TEXT or UI"
 }

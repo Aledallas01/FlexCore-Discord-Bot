@@ -421,6 +421,8 @@ class DiscordBot:
                         "servers": len(self.bot.guilds)
                     }
                     bot_queue.put(("info", info))
+                    # Invia status online quando il bot è pronto
+                    bot_queue.put(("status", "online"))
                     self._ui_info_sent = True
                     
             except Exception:

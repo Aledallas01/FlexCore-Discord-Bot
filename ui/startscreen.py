@@ -207,12 +207,12 @@ class BotDashboard(ctk.CTk):
         
         self.status_badge = ctk.CTkLabel(
             header,
-            text="● ONLINE",
+            text="● STARTING...",
             font=("Roboto", 12, "bold"),
-            text_color=COLORS["success"],
+            text_color=COLORS["warning"],  # Giallo mentre si avvia
             fg_color=COLORS["card_bg"],
             corner_radius=20,
-            width=100,
+            width=120,
             height=30
         )
         self.status_badge.pack(side="right")
@@ -287,6 +287,18 @@ class BotDashboard(ctk.CTk):
                     self.update_bot_stats(data)
                 elif msg_type == "info":
                     self.update_bot_info(data)
+                elif msg_type == "status":
+                    # Aggiorna badge status
+                    if data == "online":
+                        self.status_badge.configure(
+                            text="● ONLINE",
+                            text_color=COLORS["success"]
+                        )
+                    elif data == "offline":
+                        self.status_badge.configure(
+                            text="● OFFLINE",
+                            text_color=COLORS["error"]
+                        )
                     
         except queue.Empty:
             pass

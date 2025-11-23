@@ -1,8 +1,8 @@
 {
-  "staff_roles": ["1422651882228420771"],
-  "admin_roles": ["1416386277426724955"],
-  "log_channel_id": "1422615494284021780",
-  "mute_role_id": "1423344039603994689",
+  "staff_roles": ["STAFF_ROLE_ID_HERE"],
+  "admin_roles": ["ADMIN_ROLE_ID_HERE"],
+  "log_channel_id": "LOG_CHANNEL_ID_HERE",
+  "mute_role_id": "MUTED_ROLE_ID_HERE",
   "mute_role_name": "null",
   "embed_colors": {
     "warn": "#FFA500",
