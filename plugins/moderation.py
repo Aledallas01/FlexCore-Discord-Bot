@@ -246,8 +246,8 @@ class ModerationCog(commands.Cog):
             return True
         
         now = datetime.now()
-        max_commands = self.config["rate_limit"]["max_commands"]
-        time_window = self.config["rate_limit"]["per_seconds"]
+        max_commands = int(self.config["rate_limit"]["max_commands"])
+        time_window = int(self.config["rate_limit"]["per_seconds"])
         
         # Rimuovi timestamp vecchi
         cutoff = now - timedelta(seconds=time_window)
@@ -295,6 +295,11 @@ class ModerationCog(commands.Cog):
         log_channel_id = self.config.get("log_channel_id")
         if not log_channel_id:
             return
+            
+        try:
+            log_channel_id = int(log_channel_id)
+        except (ValueError, TypeError):
+            return
         
         log_channel = guild.get_channel(log_channel_id)
         if log_channel and isinstance(log_channel, discord.TextChannel):
@@ -323,9 +328,12 @@ class ModerationCog(commands.Cog):
         # Controlla se configurato
         mute_role_id = self.config.get("mute_role_id")
         if mute_role_id:
-            role = guild.get_role(mute_role_id)
-            if role:
-                return role
+            try:
+                role = guild.get_role(int(mute_role_id))
+                if role:
+                    return role
+            except (ValueError, TypeError):
+                pass
         
         # Cerca per nome
         mute_role_name = self.config.get("mute_role_name", "Muted")
@@ -562,8 +570,8 @@ class ModerationCog(commands.Cog):
             
             # Auto-actions se abilitati
             if self.config.get("auto_actions", {}).get("enabled", False):
-                auto_ban_warns = self.config["auto_actions"].get("auto_ban_warns", 5)
-                auto_mute_warns = self.config["auto_actions"].get("auto_mute_warns", 3)
+                auto_ban_warns = int(self.config["auto_actions"].get("auto_ban_warns", 5))
+                auto_mute_warns = int(self.config["auto_actions"].get("auto_mute_warns", 3))
                 
                 if warn_count >= auto_ban_warns:
                     # Auto-ban

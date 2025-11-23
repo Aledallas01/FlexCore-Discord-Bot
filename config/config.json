@@ -1,0 +1,6 @@
+{
+  "token": "YOUR_BOT_TOKEN",
+  "prefix": "!",
+  "owner_id": "OWNER_DISCORD_ID",
+  "startscreen_type": "TEXT or UI"
+}

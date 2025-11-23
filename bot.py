@@ -47,7 +47,8 @@ class DiscordBot:
             help_command=commands.DefaultHelpCommand(),
             case_insensitive=True,  # Comandi case-insensitive
             strip_after_prefix=True,
-            owner_id=self.config.get('owner_id')
+            strip_after_prefix=True,
+            owner_id=int(self.config.get('owner_id')) if self.config.get('owner_id') else None
         )
         
         # Inizializza il loader
@@ -441,7 +442,7 @@ def main():
         
     startscreen_type = config.get("startscreen_type", "prompt")
     
-    if startscreen_type == "ui":
+    if startscreen_type == "UI" or startscreen_type == "ui":
         # Modalità UI
         import queue
         import threading
