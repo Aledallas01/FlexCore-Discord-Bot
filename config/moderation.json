@@ -1,9 +1,9 @@
 {
-  "staff_roles": [],
-  "admin_roles": [],
-  "log_channel_id": "LOG_CHANNEL_ID",
-  "mute_role_id": "MUTED_ROLE_ID",
-  "mute_role_name": "If mute_role_id is null put here the name of the muted role",
+  "staff_roles": ["1422651882228420771"],
+  "admin_roles": ["1416386277426724955"],
+  "log_channel_id": "1422615494284021780",
+  "mute_role_id": "1423344039603994689",
+  "mute_role_name": "null",
   "embed_colors": {
     "warn": "#FFA500",
     "unwarn": "#90EE90",

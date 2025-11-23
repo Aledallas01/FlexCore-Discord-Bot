@@ -7,6 +7,9 @@ import sys
 from pathlib import Path
 
 
+from config_validator import ConfigValidator
+
+
 class PluginLoader:
     """Gestisce il caricamento dinamico dei plugin con auto-discovery"""
     
@@ -120,6 +123,12 @@ class PluginLoader:
         
         for plugin_name, enabled in self.plugins_config.items():
             if enabled:
+                # Valida configurazione plugin
+                if not ConfigValidator.validate_plugin(plugin_name):
+                    print(f"  ❌ Plugin '{plugin_name}' saltato: Configurazione invalida")
+                    error_count += 1
+                    continue
+
                 try:
                     # Importa dinamicamente il modulo
                     module = importlib.import_module(f'{self.plugins_dir}.{plugin_name}')

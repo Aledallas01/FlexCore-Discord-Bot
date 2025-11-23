@@ -1,14 +1,16 @@
 # Discord Bot con Sistema Plugin
 
-Bot Discord modulare in Python con sistema di caricamento dinamico dei plugin e supporto dual-command (text + slash).
+Bot Discord modulare in Python con sistema di caricamento dinamico dei plugin, supporto dual-command (text + slash) e **Dashboard UI**.
 
 ## 🚀 Caratteristiche
 
 - **Sistema Plugin Modulare**: Architettura separata con `bot.py` (core) e `loader.py` (gestione plugin)
+- **Dashboard UI**: Interfaccia grafica moderna con statistiche in tempo reale (CPU, RAM, Ping) e log colorati
+- **Logging Avanzato**: Log su file (`logs/moderation.log`) e embed estetici con avatar e footer
 - **Auto-Discovery**: Scansione automatica della cartella `plugins/` e registrazione in `plugins.json`
 - **Dual Commands**: Supporto sia per comandi text (`!comando`) che slash (`/comando`)
 - **Configurazione Dinamica**: Nuovi plugin aggiunti automaticamente con `true` di default
-- **Configurazione Semplice**: File JSON per gestire token e abilitazione plugin
+- **Configurazione Semplice**: File JSON per gestire token e abilitazione plugin (valori numerici come stringhe)
 - **Plugin Inclusi**:
   - 🎫 **Tickets**: Sistema di supporto con ticket
   - 🛡️ **Moderation**: Comandi di moderazione (kick, ban, timeout, clear)
@@ -20,14 +22,19 @@ Bot Discord modulare in Python con sistema di caricamento dinamico dei plugin e 
 DiscordBot/
 ├── bot.py                 # Core del bot (inizializzazione, eventi)
 ├── loader.py              # Sistema auto-discovery e caricamento plugin
+├── ui/                    # Interfaccia Grafica
+│   └── startscreen.py    # Dashboard UI
 ├── config/                # Configurazioni
 │   ├── config.json       # Configurazione bot
+│   ├── moderation.json   # Configurazione moderazione
 │   └── plugins.json      # Abilitazione plugin (auto-generato)
 ├── plugins/              # Plugin
 │   ├── __init__.py
 │   ├── tickets.py        # Plugin ticket
 │   ├── moderation.py     # Plugin moderazione
 │   └── funny.py          # Plugin divertenti
+├── logs/                 # File di log
+├── data/                 # Database SQLite
 ├── requirements.txt      # Dipendenze
 └── README.md            # Questo file
 ```
@@ -55,6 +62,7 @@ pip install -r requirements.txt
 ```bash
 python bot.py
 ```
+Si aprirà automaticamente la **Dashboard UI** per monitorare il bot.
 
 ## 🎮 Comandi
 
@@ -71,11 +79,12 @@ python bot.py
 > **Nota**: Il plugin moderation è **disabilitato di default**. Abilitalo in `config/plugins.json`
 
 - `!kick @utente [motivo]` - Espelle un membro
-- `!ban @utente [motivo]` - Banna un membro
+- `!ban @utente [durata] [motivo]` - Banna un membro (es: `!ban @User 1h Spam`)
 - `!unban <user_id>` - Sbanna un utente
-- `!clear <numero>` - Elimina messaggi (max 100)
-- `!timeout @utente <minuti> [motivo]` - Mette in timeout un membro
-- `!untimeout @utente` - Rimuove il timeout
+- `!mute @utente [durata] [motivo]` - Silenzia un utente (es: `!mute @User 30m`)
+- `!unmute @utente` - Rimuove il silenziamento
+- `!warn @utente [motivo]` - Avverte un utente
+- `!unwarn @utente [id]` - Rimuove un avvertimento
 
 ### Plugin Funny (🎮)
 | Text Command | Slash Command | Descrizione |
@@ -131,22 +140,8 @@ async def setup(bot):
 
 ## ⚙️ Sincronizzazione Slash Commands
 
-Gli slash commands devono essere sincronizzati con Discord:
-
-### Opzione 1: Sincronizzazione per Server (Rapida)
-Modifica `bot.py` dopo `await self.loader.load_plugins()`:
-```python
-# Sincronizza per un server specifico (immediato)
-await self.loader.sync_commands(guild_id=YOUR_GUILD_ID)
-```
-
-### Opzione 2: Sincronizzazione Globale (Lenta)
-```python
-# Sincronizza globalmente (può richiedere fino a 1 ora)
-await self.loader.sync_commands()
-```
-
-> **Consiglio**: Usa sincronizzazione per server durante lo sviluppo, poi passa a globale per produzione
+Il bot esegue automaticamente una **sincronizzazione globale** all'avvio.
+I comandi slash potrebbero impiegare fino a 1 ora per apparire ovunque, ma di solito sono istantanei se il bot è in pochi server.
 
 ## 📝 Configurazione
 
@@ -155,7 +150,8 @@ await self.loader.sync_commands()
 {
   "token": "YOUR_BOT_TOKEN_HERE",
   "prefix": "!",
-  "owner_id": "YOUR_DISCORD_USER_ID"
+  "owner_id": "YOUR_DISCORD_USER_ID",
+  "startscreen_type": "ui"
 }
 ```
 
@@ -187,7 +183,9 @@ await self.loader.sync_commands()
 ## 📦 Dipendenze
 
 - `discord.py` >= 2.3.0
-- `python-dotenv` >= 1.0.0
+- `customtkinter` >= 5.2.0 (per la UI)
+- `Pillow` >= 10.0.0 (per immagini UI)
+- `psutil` (per statistiche sistema)
 
 ## 🐛 Troubleshooting
 

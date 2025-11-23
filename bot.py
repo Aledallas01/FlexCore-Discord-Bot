@@ -15,12 +15,18 @@ from datetime import datetime, timedelta
 from typing import Optional, Dict
 from collections import defaultdict
 from loader import PluginLoader
+from config_validator import ConfigValidator
 
 
 class DiscordBot:
     """Bot Discord Super Potente con sistema di plugin modulare e monitoring avanzato"""
     
     def __init__(self):
+        # Valida configurazione core PRIMA di tutto
+        if not ConfigValidator.validate_core():
+            print("❌ Impossibile avviare il bot: Configurazione invalida.")
+            sys.exit(1)
+
         # Carica configurazione
         self.config = self.load_config()
         
@@ -47,8 +53,7 @@ class DiscordBot:
             help_command=commands.DefaultHelpCommand(),
             case_insensitive=True,  # Comandi case-insensitive
             strip_after_prefix=True,
-            strip_after_prefix=True,
-            owner_id=int(self.config.get('owner_id')) if self.config.get('owner_id') else None
+            owner_id=self._get_owner_id()
         )
         
         # Inizializza il loader
@@ -66,6 +71,17 @@ class DiscordBot:
         # Aggiungi menzione come prefix
         return commands.when_mentioned_or(*prefixes)(bot, message)
     
+    def _get_owner_id(self) -> Optional[int]:
+        """Recupera e converte owner_id in int"""
+        oid = self.config.get('owner_id')
+        if not oid:
+            return None
+        try:
+            return int(oid)
+        except ValueError:
+            print(f"⚠️  Warning: owner_id '{oid}' non valido (deve essere numerico).")
+            return None
+
     def load_config(self) -> Dict:
         """Carica il file di configurazione principale"""
         config_path = os.path.join('config', 'config.json')
@@ -439,6 +455,15 @@ def main():
             config = json.load(f)
     except:
         config = {}
+    
+    # 🔄 AUTO-UPDATE CHECK (se abilitato)
+    if config.get("auto_update", False):
+        try:
+            from auto_updater import AutoUpdater
+            updater = AutoUpdater()
+            updater.check_and_apply()
+        except Exception as e:
+            print(f"\033[91m⚠️  Auto-update fallito: {e}\033[0m\n")
         
     startscreen_type = config.get("startscreen_type", "prompt")
     

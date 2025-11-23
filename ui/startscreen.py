@@ -361,9 +361,74 @@ class BotDashboard(ctk.CTk):
         if "name" in info:
             self.lbl_bot_name.configure(text=info['name'])
         if "id" in info:
-            self.lbl_bot_id.configure(text=str(info['id']))
+             self.lbl_bot_id.configure(text=str(info['id']))
         if "servers" in info:
              self.lbl_servers.configure(text=str(info['servers']))
+    
+    def show_error_popup(self, title, message):
+        """Mostra popup di errore con messaggio dettagliato"""
+        # Crea toplevel window
+        error_window = ctk.CTkToplevel(self)
+        error_window.title(f"❌ {title}")
+        error_window.geometry("600x500")
+        error_window.resizable(False, False)
+        
+        # Porta in primo piano
+        error_window.lift()
+        error_window.focus_force()
+        error_window.grab_set()
+        
+        # Header
+        header = ctk.CTkFrame(error_window, fg_color=COLORS["error"], height=80)
+        header.pack(fill="x", padx=0, pady=0)
+        header.pack_propagate(False)
+        
+        ctk.CTkLabel(
+            header,
+            text="⚠️",
+            font=("Segoe UI Emoji", 48)
+        ).pack(pady=15)
+        
+        # Titolo
+        title_frame = ctk.CTkFrame(error_window, fg_color="transparent")
+        title_frame.pack(fill="x", padx=30, pady=(20, 10))
+        
+        ctk.CTkLabel(
+            title_frame,
+            text=title,
+            font=("Roboto", 20, "bold"),
+            text_color=COLORS["error"]
+        ).pack()
+        
+        # Messaggio
+        msg_frame = ctk.CTkFrame(error_window, fg_color=COLORS["card_bg"], corner_radius=10)
+        msg_frame.pack(fill="both", expand=True, padx=30, pady=(0, 20))
+        
+        msg_box = ctk.CTkTextbox(
+            msg_frame,
+            font=("Roboto", 12),
+            fg_color=COLORS["card_bg"],
+            text_color=COLORS["text_main"],
+            wrap="word",
+            activate_scrollbars=True
+        )
+        msg_box.pack(fill="both", expand=True, padx=15, pady=15)
+        msg_box.insert("1.0", message)
+        msg_box.configure(state="disabled")
+        
+        # Pulsante Chiudi
+        btn_frame = ctk.CTkFrame(error_window, fg_color="transparent")
+        btn_frame.pack(fill="x", padx=30, pady=(0, 20))
+        
+        ctk.CTkButton(
+            btn_frame,
+            text="CHIUDI E CORREGGI CONFIG",
+            font=("Roboto", 14, "bold"),
+            fg_color=COLORS["error"],
+            hover_color="#c0392b",
+            height=50,
+            command=lambda: [error_window.destroy(), self.on_close()]
+        ).pack(fill="x")
 
     def restart_bot_action(self):
         self.append_log("🔄 Riavvio del sistema in corso...")
@@ -405,5 +470,17 @@ class BotDashboard(ctk.CTk):
         sys.exit(0)
 
 def run_ui(bot_queue, stop_event):
+    """Avvia l'interfaccia UI con controllo errori configurazione"""
+    from config_validator import ConfigValidator
+    
     app = BotDashboard(bot_queue, stop_event)
+    
+    # Controlla se c'è un errore di validazione da mostrare
+    if ConfigValidator.last_error:
+        # Schedule error popup after UI is ready
+        app.after(100, lambda: app.show_error_popup(
+            ConfigValidator.last_error["title"],
+            ConfigValidator.last_error["message"]
+        ))
+    
     app.mainloop()
