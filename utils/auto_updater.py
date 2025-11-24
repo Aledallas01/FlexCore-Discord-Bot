@@ -1,3 +1,19 @@
+"""
+🔄 AUTO-UPDATE SYSTEM
+Sistema intelligente di aggiornamento automatico dal repository GitHub
+"""
+
+import requests
+import os
+import json
+import shutil
+from datetime import datetime
+from typing import List, Dict, Optional
+from utils.language_manager import get_text
+
+# CONFIGURAZIONE HARDCODED (NON MODIFICABILE)
+GITHUB_REPO = "Aledallas01/FlexCore-Discord-Bot"
+GITHUB_BRANCH = "main"
 GITHUB_API_BASE = f"https://api.github.com/repos/{GITHUB_REPO}"
 
 # File da NON aggiornare MAI

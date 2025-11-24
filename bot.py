@@ -458,33 +458,37 @@ def run_bot_thread(bot_instance, loop):
 def main():
     """Funzione principale"""
     
+    # 🔥 AUTO-UPDATE PRIORITY - PRIMA DI TUTTO 🔥
+    # Esegue SEMPRE il check aggiornamenti come prima cosa
+    # Se ci sono bug nel codice corrente, vengono risolti prima di causare problemi
+    print("\n" + "="*70)
+    print("🔄 CONTROLLO AGGIORNAMENTI PRIORITARIO")
+    print("="*70)
+    
+    try:
+        from utils.auto_updater import AutoUpdater
+        updater = AutoUpdater()
+        update_applied = updater.check_and_apply()
+        
+        if update_applied:
+            print("\n" + "="*70)
+            print("✅ AGGIORNAMENTI APPLICATI - RIAVVIO NECESSARIO")
+            print("="*70)
+            print("\n🔄 Riavvio automatico del bot in 3 secondi...")
+            import time
+            time.sleep(3)
+            
+            # Riavvia il processo Python
+            import sys
+            import os
+            os.execv(sys.executable, ['python'] + sys.argv)
+            
+    except Exception as e:
+        print(f"⚠️  Auto-update non disponibile: {e}")
+        print("Continuo con l'avvio normale...\n")
+    
     # Carica config per decidere modalità
     try:
-        with open(os.path.join('config', 'config.json'), 'r') as f:
-            config = json.load(f)
-    except:
-        config = {}
-    
-    # 🔄 AUTO-UPDATE CHECK (se abilitato)
-    if config.get("auto_update", False):
-        try:
-            from utils.auto_updater import AutoUpdater
-            updater = AutoUpdater()
-            updater.check_and_apply()
-        except Exception as e:
-            print(f"\033[91m⚠️  Auto-update fallito: {e}\033[0m\n")
-        
-    startscreen_type = config.get("startscreen_type", "prompt")
-    
-    if startscreen_type == "UI" or startscreen_type == "ui":
-        # Modalità UI
-        import queue
-        import threading
-        from ui.startscreen import run_ui
-        
-        bot_queue = queue.Queue()
-        stop_event = threading.Event()
-        
         # Reindirizza stdout
         sys.stdout = StreamRedirector(bot_queue, sys.stdout)
         # sys.stderr = StreamRedirector(bot_queue, sys.stderr) # Opzionale
