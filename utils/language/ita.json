@@ -177,7 +177,12 @@
     "restart_warning": "RIAVVIO NECESSARIO",
     "restart_instructions": "Per applicare le modifiche, riavvia il bot manualmente:",
     "restart_command": "→ python bot.py",
-    "restart_countdown": "Il programma terminerà tra 5 secondi..."
+    "restart_countdown": "Il programma terminerà tra 5 secondi...",
+    "force_mode_warning": "Il bot NON verrà avviato dopo l'update.",
+    "force_success": "AGGIORNAMENTI APPLICATI CON SUCCESSO",
+    "force_restart_hint": "Puoi ora riavviare il bot con: python bot.py",
+    "no_updates_title": "NESSUN AGGIORNAMENTO DISPONIBILE",
+    "no_updates_message": "Il bot è già aggiornato all'ultima versione."
   },
   "moderation": {
     "config_loaded": "Configurazione moderazione caricata da {path}",

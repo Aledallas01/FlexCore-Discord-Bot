@@ -177,7 +177,12 @@
     "restart_warning": "RESTART REQUIRED",
     "restart_instructions": "To apply changes, restart the bot manually:",
     "restart_command": "→ python bot.py",
-    "restart_countdown": "Program will exit in 5 seconds..."
+    "restart_countdown": "Program will exit in 5 seconds...",
+    "force_mode_warning": "Bot will NOT start after update.",
+    "force_success": "UPDATES APPLIED SUCCESSFULLY",
+    "force_restart_hint": "You can now restart the bot with: python bot.py",
+    "no_updates_title": "NO UPDATES AVAILABLE",
+    "no_updates_message": "Bot is already up to date."
   },
   "moderation": {
     "config_loaded": "Moderation configuration loaded from {path}",

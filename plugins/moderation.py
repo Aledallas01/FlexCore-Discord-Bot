@@ -28,6 +28,7 @@ from collections import defaultdict
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), 'utils'))
 from utils.language_manager import get_text
+from mod_database import ModerationDatabase
 
 
 class ModerationCog(commands.Cog):

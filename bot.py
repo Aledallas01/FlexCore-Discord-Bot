@@ -458,6 +458,21 @@ def run_bot_thread(bot_instance, loop):
 def main():
     """Funzione principale"""
     
+    # 🌍 INIT LANGUAGE FIRST 🌍
+    # Carica la lingua prima di tutto il resto per avere messaggi tradotti anche nell'updater
+    try:
+        config_path = os.path.join('config', 'config.json')
+        if os.path.exists(config_path):
+            with open(config_path, 'r') as f:
+                temp_config = json.load(f)
+                lang_code = temp_config.get('language', 'ita')
+        else:
+            lang_code = 'ita'
+    except:
+        lang_code = 'ita'
+        
+    init_language(lang_code)
+    
     # 🔥 AUTO-UPDATE PRIORITY - PRIMA DI TUTTO 🔥
     # Esegue SEMPRE il check aggiornamenti come prima cosa
     # Se ci sono bug nel codice corrente, vengono risolti prima di causare problemi
@@ -467,12 +482,12 @@ def main():
     
     if force_update_mode:
         print("\n" + "="*70)
-        print("🔄 MODALITÀ FORCE UPDATE - SOLO AGGIORNAMENTO")
+        print(f"🔄 {get_text('auto_updater.title')} - FORCE MODE")
         print("="*70)
-        print("Il bot NON verrà avviato dopo l'update.\n")
+        print(f"{get_text('auto_updater.force_mode_warning')}\n")
     else:
         print("\n" + "="*70)
-        print("🔄 CONTROLLO AGGIORNAMENTI PRIORITARIO")
+        print(f"🔄 {get_text('auto_updater.title')}")
         print("="*70)
     
     try:
@@ -484,14 +499,14 @@ def main():
             # Modalità force update: esci sempre dopo il check
             if update_applied:
                 print("\n" + "="*70)
-                print("✅ AGGIORNAMENTI APPLICATI CON SUCCESSO")
+                print(f"✅ {get_text('auto_updater.force_success')}")
                 print("="*70)
-                print("\nPuoi ora riavviare il bot con: python bot.py\n")
+                print(f"\n{get_text('auto_updater.force_restart_hint')}\n")
             else:
                 print("\n" + "="*70)
-                print("ℹ️  NESSUN AGGIORNAMENTO DISPONIBILE")
+                print(f"ℹ️  {get_text('auto_updater.no_updates_title')}")
                 print("="*70)
-                print("\nIl bot è già aggiornato all'ultima versione.\n")
+                print(f"\n{get_text('auto_updater.no_updates_message')}\n")
             sys.exit(0)
         
         if update_applied:
