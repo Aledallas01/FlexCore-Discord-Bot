@@ -1,0 +1,158 @@
+{
+  "bot": {
+    "name": "FlexCore Discord Bot",
+    "startup": {
+      "logo_title": "🚀 SISTEMA PLUGIN MODULARE v2.0 - SUPER POTENTE 🚀",
+      "initializing": "⚙️  INIZIALIZZAZIONE SISTEMA SUPER POTENTE...",
+      "connected": "🎉 BOT CONNESSO CON SUCCESSO! 🎉",
+      "ready": "✅ BOT OPERATIVO E PRONTO ALL'USO! ✅"
+    },
+    "config": {
+      "invalid": "Impossibile avviare il bot: Configurazione invalida.",
+      "file_not_found": "Errore: File {path} non trovato!",
+      "json_error": "Errore nel parsing di {path}: {error}",
+      "token_not_configured": "Errore: Token non configurato!",
+      "token_invalid": "Errore: Token non valido!",
+      "token_hint": "Configura il token in config/config.json"
+    }
+  },
+  "system": {
+    "info": {
+      "title": "📊 INFORMAZIONI SISTEMA",
+      "os": "💻 OS",
+      "python": "🐍 Python",
+      "discord_py": "📦 Discord.py",
+      "cpu": "🔥 CPU",
+      "ram": "💾 RAM",
+      "date": "📅 Data",
+      "directory": "📂 Directory",
+      "processes": "Processi"
+    },
+    "bot_info": {
+      "title": "🤖 INFORMAZIONI BOT",
+      "username": "👤 Username",
+      "id": "🆔 ID",
+      "servers": "📊 Server",
+      "users": "👥 Utenti Totali",
+      "plugins": "🔌 Plugin Attivi",
+      "text_commands": "📝 Comandi Text",
+      "slash_commands": "⚡ Slash Commands",
+      "latency": "🏓 Latency",
+      "name_field": "🤖 Nome",
+      "version_field": "📌 Versione",
+      "author_field": "👤 Autore",
+      "repo_field": "🔗 Repository",
+      "license_field": "📝 Licenza"
+    },
+    "resources": {
+      "title": "💻 RISORSE SISTEMA"
+    }
+  },
+  "plugins": {
+    "loading": {
+      "title": "Sistema di caricamento plugin avviato",
+      "scanning": "Scansione cartella plugins/...",
+      "found": "Trovati {count} plugin: {names}",
+      "updating_config": "Aggiornamento configurazione...",
+      "loading_enabled": "Caricamento plugin abilitati...",
+      "new_added": "Nuovo plugin '{name}' aggiunto (abilitato di default)",
+      "removed": "Plugin '{name}' rimosso (file non trovato)",
+      "loaded": "Plugin '{name}' caricato",
+      "disabled": "Plugin '{name}' disabilitato",
+      "error_config": "Plugin '{name}' saltato: Configurazione invalida",
+      "error_class": "Plugin '{name}': classe {class_name} non trovata",
+      "error_file": "Plugin '{name}': file non trovato",
+      "error_loading": "Errore caricamento '{name}': {error}",
+      "summary": "Riepilogo: {loaded} caricati, {disabled} disabilitati, {errors} errori"
+    },
+    "list": {
+      "title": "🔌 PLUGIN CARICATI"
+    }
+  },
+  "servers": {
+    "title": "🌐 SERVER CONNESSI",
+    "members": "membri",
+    "and_more": "... e altri {count} server",
+    "joined": "Aggiunto al server: {name} (ID: {id}) - {members} membri",
+    "left": "Rimosso dal server: {name} (ID: {id})"
+  },
+  "commands": {
+    "sync": {
+      "syncing": "Sincronizzazione slash commands...",
+      "cleaning": "Pulizia duplicati dai server...",
+      "synced_global": "Sincronizzati {count} slash commands globalmente!",
+      "unique_available": "I comandi sono ora unici e disponibili su tutti i server.",
+      "error": "Errore sincronizzazione: {error}"
+    },
+    "executed": "usato: {command} in {location}",
+    "errors": {
+      "not_found": "Comando non trovato",
+      "missing_permissions": "Non hai i permessi necessari: `{permissions}`",
+      "missing_argument": "Argomento mancante: `{arg}`\nUsa `{prefix}help {command}` per vedere la sintassi corretta",
+      "bad_argument": "Argomento non valido!\nUsa `{prefix}help {command}` per maggiori informazioni",
+      "cooldown": "Comando in cooldown! Riprova tra {seconds} secondi",
+      "bot_missing_permissions": "Il bot non ha i permessi necessari: `{permissions}`",
+      "bot_missing_permissions_slash": "Il bot non ha i permessi necessari!",
+      "unexpected": "Si è verificato un errore imprevisto. L'errore è stato registrato.",
+      "unhandled": "Errore non gestito nel comando '{command}': {error}",
+      "unhandled_slash": "Errore non gestito nello slash command: {error}"
+    }
+  },
+  "members": {
+    "joined": "{member} è entrato in {guild}",
+    "left": "{member} ha lasciato {guild}"
+  },
+  "stats": {
+    "title": "STATISTICHE BOT",
+    "uptime": "Uptime",
+    "servers_count": "Server",
+    "users_count": "Utenti",
+    "commands_executed": "Comandi eseguiti",
+    "messages_seen": "Messaggi visti",
+    "errors_count": "Errori",
+    "latency": "Latency"
+  },
+  "update": {
+    "title": "⚡ AGGIORNAMENTO DISPONIBILE",
+    "available": "È disponibile una nuova versione del bot!",
+    "how_to": "Per aggiornare automaticamente:",
+    "step1": "Imposta {highlight} in config.json",
+    "step2": "Riavvia il bot",
+    "failed": "Auto-update fallito: {error}"
+  },
+  "ui": {
+    "status": {
+      "starting": "STARTING...",
+      "online": "ONLINE",
+      "offline": "OFFLINE"
+    },
+    "error_popup": {
+      "title": "Errore Configurazione",
+      "button": "CHIUDI e CORREGGI CONFIGURAZIONE"
+    }
+  },
+  "validation": {
+    "core": {
+      "title": "ERRORE CRITICO - CONFIGURAZIONE CORE",
+      "file_missing": "Il file di configurazione è mancante o non valido!",
+      "how_to_fix": "Come risolvere:",
+      "step1": "Assicurati che il file '{path}' esista",
+      "step2": "Verifica che sia un JSON valido",
+      "missing_fields": "Campi obbligatori mancanti:",
+      "field": "• {field}"
+    },
+    "plugin": {
+      "error_corrupted": "ERRORE PLUGIN - FILE CORROTTO",
+      "error_incomplete": "ERRORE PLUGIN - CONFIGURAZIONE INCOMPLETA",
+      "error_values": "ERRORE PLUGIN - VALORI INVALIDI",
+      "file_corrupted": "Il file di configurazione è corrotto o non valido!",
+      "missing_fields": "Campi obbligatori mancanti:",
+      "invalid_value": "Campo '{field}' contiene valore non valido '{value}'. {hint}"
+    }
+  },
+  "general": {
+    "stopped_by_user": "BOT ARRESTATO DALL'UTENTE",
+    "critical_error": "ERRORE CRITICO: {error}",
+    "folder_not_found": "Cartella {folder}/ non trovata!"
+  }
+}

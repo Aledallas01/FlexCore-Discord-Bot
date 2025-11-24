@@ -1,0 +1,158 @@
+{
+  "bot": {
+    "name": "FlexCore Discord Bot",
+    "startup": {
+      "logo_title": "🚀 MODULAR PLUGIN SYSTEM v2.0 - SUPER POWERFUL 🚀",
+      "initializing": "⚙️  INITIALIZING SUPER POWERFUL SYSTEM...",
+      "connected": "🎉 BOT SUCCESSFULLY CONNECTED! 🎉",
+      "ready": "✅ BOT OPERATIONAL AND READY TO USE! ✅"
+    },
+    "config": {
+      "invalid": "Cannot start bot: Invalid configuration.",
+      "file_not_found": "Error: File {path} not found!",
+      "json_error": "Error parsing {path}: {error}",
+      "token_not_configured": "Error: Token not configured!",
+      "token_invalid": "Error: Invalid token!",
+      "token_hint": "Configure the token in config/config.json"
+    }
+  },
+  "system": {
+    "info": {
+      "title": "📊 SYSTEM INFORMATION",
+      "os": "💻 OS",
+      "python": "🐍 Python",
+      "discord_py": "📦 Discord.py",
+      "cpu": "🔥 CPU",
+      "ram": "💾 RAM",
+      "date": "📅 Date",
+      "directory": "📂 Directory",
+      "processes": "Processes"
+    },
+    "bot_info": {
+      "title": "🤖 BOT INFORMATION",
+      "username": "👤 Username",
+      "id": "🆔 ID",
+      "servers": "📊 Servers",
+      "users": "👥 Total Users",
+      "plugins": "🔌 Active Plugins",
+      "text_commands": "📝 Text Commands",
+      "slash_commands": "⚡ Slash Commands",
+      "latency": "🏓 Latency",
+      "name_field": "🤖 Name",
+      "version_field": "📌 Version",
+      "author_field": "👤 Author",
+      "repo_field": "🔗 Repository",
+      "license_field": "📝 License"
+    },
+    "resources": {
+      "title": "💻 SYSTEM RESOURCES"
+    }
+  },
+  "plugins": {
+    "loading": {
+      "title": "Plugin loading system started",
+      "scanning": "Scanning plugins/ folder...",
+      "found": "Found {count} plugins: {names}",
+      "updating_config": "Updating configuration...",
+      "loading_enabled": "Loading enabled plugins...",
+      "new_added": "New plugin '{name}' added (enabled by default)",
+      "removed": "Plugin '{name}' removed (file not found)",
+      "loaded": "Plugin '{name}' loaded",
+      "disabled": "Plugin '{name}' disabled",
+      "error_config": "Plugin '{name}' skipped: Invalid configuration",
+      "error_class": "Plugin '{name}': class {class_name} not found",
+      "error_file": "Plugin '{name}': file not found",
+      "error_loading": "Error loading '{name}': {error}",
+      "summary": "Summary: {loaded} loaded, {disabled} disabled, {errors} errors"
+    },
+    "list": {
+      "title": "🔌 LOADED PLUGINS"
+    }
+  },
+  "servers": {
+    "title": "🌐 CONNECTED SERVERS",
+    "members": "members",
+    "and_more": "... and {count} more servers",
+    "joined": "Added to server: {name} (ID: {id}) - {members} members",
+    "left": "Removed from server: {name} (ID: {id})"
+  },
+  "commands": {
+    "sync": {
+      "syncing": "Syncing slash commands...",
+      "cleaning": "Cleaning duplicates from servers...",
+      "synced_global": "Synced {count} slash commands globally!",
+      "unique_available": "Commands are now unique and available on all servers.",
+      "error": "Sync error: {error}"
+    },
+    "executed": "used: {command} in {location}",
+    "errors": {
+      "not_found": "Command not found",
+      "missing_permissions": "You don't have the necessary permissions: `{permissions}`",
+      "missing_argument": "Missing argument: `{arg}`\nUse `{prefix}help {command}` to see correct syntax",
+      "bad_argument": "Invalid argument!\nUse `{prefix}help {command}` for more information",
+      "cooldown": "Command on cooldown! Try again in {seconds} seconds",
+      "bot_missing_permissions": "Bot doesn't have necessary permissions: `{permissions}`",
+      "bot_missing_permissions_slash": "Bot doesn't have necessary permissions!",
+      "unexpected": "An unexpected error occurred. The error has been logged.",
+      "unhandled": "Unhandled error in command '{command}': {error}",
+      "unhandled_slash": "Unhandled error in slash command: {error}"
+    }
+  },
+  "members": {
+    "joined": "{member} joined {guild}",
+    "left": "{member} left {guild}"
+  },
+  "stats": {
+    "title": "BOT STATISTICS",
+    "uptime": "Uptime",
+    "servers_count": "Servers",
+    "users_count": "Users",
+    "commands_executed": "Commands executed",
+    "messages_seen": "Messages seen",
+    "errors_count": "Errors",
+    "latency": "Latency"
+  },
+  "update": {
+    "title": "⚡ UPDATE AVAILABLE",
+    "available": "A new version of the bot is available!",
+    "how_to": "To update automatically:",
+    "step1": "Set {highlight} in config.json",
+    "step2": "Restart the bot",
+    "failed": "Auto-update failed: {error}"
+  },
+  "ui": {
+    "status": {
+      "starting": "STARTING...",
+      "online": "ONLINE",
+      "offline": "OFFLINE"
+    },
+    "error_popup": {
+      "title": "Configuration Error",
+      "button": "CLOSE AND FIX CONFIG"
+    }
+  },
+  "validation": {
+    "core": {
+      "title": "CRITICAL ERROR - CORE CONFIGURATION",
+      "file_missing": "Configuration file is missing or invalid!",
+      "how_to_fix": "How to fix:",
+      "step1": "Make sure file '{path}' exists",
+      "step2": "Verify it's valid JSON",
+      "missing_fields": "Required fields missing:",
+      "field": "• {field}"
+    },
+    "plugin": {
+      "error_corrupted": "PLUGIN ERROR - CORRUPTED FILE",
+      "error_incomplete": "PLUGIN ERROR - INCOMPLETE CONFIGURATION",
+      "error_values": "PLUGIN ERROR - INVALID VALUES",
+      "file_corrupted": "Configuration file is corrupted or invalid!",
+      "missing_fields": "Required fields missing:",
+      "invalid_value": "Field '{field}' contains invalid value '{value}'. {hint}"
+    }
+  },
+  "general": {
+    "stopped_by_user": "BOT STOPPED BY USER",
+    "critical_error": "CRITICAL ERROR: {error}",
+    "folder_not_found": "Folder {folder}/ not found!"
+  }
+}

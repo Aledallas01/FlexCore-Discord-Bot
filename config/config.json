@@ -1,6 +1,8 @@
 {
-  "token": "YOUR_TOKEN_BOT_HERE",
+  "token": "YOUR_BOT_TOKEN_HERE",
   "prefix": "!",
-  "owner_id": "YOUR_DISCORD_ID_HERE",
-  "startscreen_type": "TEXT or UI"
+  "owner_id": "YOUR_DISCORD_USER_ID",
+  "startscreen_type": "ui",
+  "auto_update": true,
+  "language": "ita"
 }
