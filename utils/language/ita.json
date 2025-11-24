@@ -150,9 +150,47 @@
       "invalid_value": "Campo '{field}' contiene valore non valido '{value}'. {hint}"
     }
   },
+  "auto_updater": {
+    "title": "🔄 AUTO-UPDATE SYSTEM",
+    "repository": "📡 Repository",
+    "branch": "🌿 Branch",
+    "checking": "⏳ Controllo aggiornamenti...",
+    "cannot_verify": "Impossibile verificare aggiornamenti (GitHub non raggiungibile)",
+    "up_to_date": "Bot già aggiornato all'ultima versione!",
+    "updates_available": "Nuovi aggiornamenti disponibili!",
+    "first_sync": "Prima sincronizzazione con GitHub",
+    "local": "Locale",
+    "remote": "Remoto",
+    "downloading": "📥 Scaricamento file modificati...",
+    "no_files": "Nessun file da aggiornare",
+    "all_protected": "Tutti i file modificati sono protetti",
+    "files_found": "Trovati {count} file da aggiornare",
+    "merged": "Merged: {file}",
+    "updated": "Updated: {file}",
+    "error_update": "Errore aggiornando {file}: {error}",
+    "error_download": "Impossibile scaricare {file}: {error}",
+    "error_github": "Errore nel controllare GitHub: {error}",
+    "error_getfiles": "Errore nel recuperare file modificati: {error}",
+    "completed": "Aggiornamento completato!",
+    "success_count": "{updated}/{total} file aggiornati con successo"
+  },
+  "moderation": {
+    "config_loaded": "Configurazione moderazione caricata da {path}",
+    "config_not_found": "File {path} non trovato, uso configurazione default",
+    "config_parse_error": "Errore parsing {path}: {error}",
+    "log_send_error": "Impossibile inviare al canale log {channel_id}: permessi insufficienti",
+    "log_error": "Errore invio log: {error}",
+    "cleanup": "Cleanup: {bans} ban e {mutes} mute scaduti rimossi",
+    "cleanup_error": "Errore cleanup task: {error}",
+    "restore": "Ripristinati {bans} ban e {mutes} mute temporanei",
+    "restore_error": "Errore ripristino azioni temporanee: {error}",
+    "auto_unban_error": "Errore auto-unban: {error}",
+    "auto_unmute_error": "Errore auto-unmute: {error}"
+  },
   "general": {
     "stopped_by_user": "BOT ARRESTATO DALL'UTENTE",
     "critical_error": "ERRORE CRITICO: {error}",
-    "folder_not_found": "Cartella {folder}/ non trovata!"
+    "folder_not_found": "Cartella {folder}/ non trovata!",
+    "json_read_error": "Errore lettura {path}: {error}"
   }
 }

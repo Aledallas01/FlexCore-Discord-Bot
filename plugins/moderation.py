@@ -14,23 +14,20 @@ Comandi disponibili:
 - /unmute - Rimuove il silenziamento
 """
 
+
 import discord
 from discord.ext import commands, tasks
 from discord import app_commands
 import json
 import os
-import re
 import asyncio
-import logging
-from logging.handlers import RotatingFileHandler
 from datetime import datetime, timedelta
 from typing import Optional, Dict, List, Union
 from collections import defaultdict
 
-# Import del database manager
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), 'utils'))
-from mod_database import ModerationDatabase
+from utils.language_manager import get_text
 
 
 class ModerationCog(commands.Cog):
@@ -98,13 +95,13 @@ class ModerationCog(commands.Cog):
         try:
             with open(config_path, 'r', encoding='utf-8') as f:
                 config = json.load(f)
-                print(f"✅ Configurazione moderazione caricata da {config_path}")
+                print(f"✅ {get_text('moderation.config_loaded', path=config_path)}")
                 return config
         except FileNotFoundError:
-            print(f"⚠️  File {config_path} non trovato, uso configurazione default")
+            print(f"⚠️  {get_text('moderation.config_not_found', path=config_path)}")
             return self._default_config()
         except json.JSONDecodeError as e:
-            print(f"❌ Errore parsing {config_path}: {e}")
+            print(f"❌ {get_text('moderation.config_parse_error', path=config_path, error=e)}")
             return self._default_config()
     
     def _default_config(self) -> Dict:
@@ -306,9 +303,9 @@ class ModerationCog(commands.Cog):
             try:
                 await log_channel.send(embed=embed)
             except discord.Forbidden:
-                print(f"⚠️  Impossibile inviare al canale log {log_channel_id}: permessi insufficienti")
+                print(f"⚠️  {get_text('moderation.log_send_error', channel_id=log_channel_id)}")
             except Exception as e:
-                print(f"❌ Errore invio log: {e}")
+                print(f"❌ {get_text('moderation.log_error', error=e)}")
     
     async def _send_dm(self, user: discord.User, embed: discord.Embed) -> bool:
         """Invia DM all'utente se abilitato"""
@@ -376,9 +373,9 @@ class ModerationCog(commands.Cog):
         try:
             result = self.db.cleanup_expired()
             if result["bans"] > 0 or result["mutes"] > 0:
-                print(f"🧹 Cleanup: {result['bans']} ban e {result['mutes']} mute scaduti rimossi")
+                print(f"🧹 {get_text('moderation.cleanup', bans=result['bans'], mutes=result['mutes'])}")
         except Exception as e:
-            print(f"❌ Errore cleanup task: {e}")
+            print(f"❌ {get_text('moderation.cleanup_error', error=e)}")
     
     @cleanup_task.before_loop
     async def before_cleanup(self):
@@ -421,10 +418,10 @@ class ModerationCog(commands.Cog):
                         self.temp_actions[f"mute_{mute['id']}"] = task
             
             if active_bans or active_mutes:
-                print(f"🔄 Ripristinati {len(active_bans)} ban e {len(active_mutes)} mute temporanei")
+                print(f"🔄 {get_text('moderation.restore', bans=len(active_bans), mutes=len(active_mutes))}")
                 
         except Exception as e:
-            print(f"❌ Errore ripristino azioni temporanee: {e}")
+            print(f"❌ {get_text('moderation.restore_error', error=e)}")
     
     async def _auto_unban(self, user_id: int, guild_id: int, delay: float):
         """Task per auto-unban dopo delay"""
@@ -458,7 +455,7 @@ class ModerationCog(commands.Cog):
             await self._send_to_log(guild, embed)
             
         except Exception as e:
-            print(f"❌ Errore auto-unban: {e}")
+            print(f"❌ {get_text('moderation.auto_unban_error', error=e)}")
     
     async def _auto_unmute(self, user_id: int, guild_id: int, delay: float):
         """Task per auto-unmute dopo delay"""
@@ -496,7 +493,7 @@ class ModerationCog(commands.Cog):
             await self._send_to_log(guild, embed)
             
         except Exception as e:
-            print(f"❌ Errore auto-unmute: {e}")
+            print(f"❌ {get_text('moderation.auto_unmute_error', error=e)}")
     
     # ===== SLASH COMMANDS =====
     

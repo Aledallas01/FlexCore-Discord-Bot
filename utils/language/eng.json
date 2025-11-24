@@ -150,9 +150,47 @@
       "invalid_value": "Field '{field}' contains invalid value '{value}'. {hint}"
     }
   },
+  "auto_updater": {
+    "title": "🔄 AUTO-UPDATE SYSTEM",
+    "repository": "📡 Repository",
+    "branch": "🌿 Branch",
+    "checking": "⏳ Checking for updates...",
+    "cannot_verify": "Cannot verify updates (GitHub unreachable)",
+    "up_to_date": "Bot is already up to date!",
+    "updates_available": "New updates available!",
+    "first_sync": "First synchronization with GitHub",
+    "local": "Local",
+    "remote": "Remote",
+    "downloading": "📥 Downloading modified files...",
+    "no_files": "No files to update",
+    "all_protected": "All modified files are protected",
+    "files_found": "Found {count} files to update",
+    "merged": "Merged: {file}",
+    "updated": "Updated: {file}",
+    "error_update": "Error updating {file}: {error}",
+    "error_download": "Unable to download {file}: {error}",
+    "error_github": "Error checking GitHub: {error}",
+    "error_getfiles": "Error retrieving modified files: {error}",
+    "completed": "Update completed!",
+    "success_count": "{updated}/{total} files updated successfully"
+  },
+  "moderation": {
+    "config_loaded": "Moderation configuration loaded from {path}",
+    "config_not_found": "File {path} not found, using default configuration",
+    "config_parse_error": "Error parsing {path}: {error}",
+    "log_send_error": "Unable to send to log channel {channel_id}: insufficient permissions",
+    "log_error": "Error sending log: {error}",
+    "cleanup": "Cleanup: {bans} expired bans and {mutes} expired mutes removed",
+    "cleanup_error": "Error in cleanup task: {error}",
+    "restore": "Restored {bans} temporary bans and {mutes} temporary mutes",
+    "restore_error": "Error restoring temporary actions: {error}",
+    "auto_unban_error": "Error in auto-unban: {error}",
+    "auto_unmute_error": "Error in auto-unmute: {error}"
+  },
   "general": {
     "stopped_by_user": "BOT STOPPED BY USER",
     "critical_error": "CRITICAL ERROR: {error}",
-    "folder_not_found": "Folder {folder}/ not found!"
+    "folder_not_found": "Folder {folder}/ not found!",
+    "json_read_error": "Error reading {path}: {error}"
   }
 }
