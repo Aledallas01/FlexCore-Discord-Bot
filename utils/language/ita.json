@@ -147,7 +147,28 @@
       "error_values": "ERRORE PLUGIN - VALORI INVALIDI",
       "file_corrupted": "Il file di configurazione è corrotto o non valido!",
       "missing_fields": "Campi obbligatori mancanti:",
-      "invalid_value": "Campo '{field}' contiene valore non valido '{value}'. {hint}"
+      "invalid_value": "Campo '{field}' contiene valore non valido '{value}'. {hint}",
+      "staff_roles_error": "ERRORE PLUGIN MODERATION - STAFF_ROLES VUOTO",
+      "staff_roles_empty": "Il campo 'staff_roles' è vuoto o non è una lista!",
+      "staff_roles_fix_step1": "1. Vai sul tuo server Discord",
+      "staff_roles_fix_step2": "2. Impostazioni Server → Ruoli → Click destro sul ruolo staff → Copia ID",
+      "staff_roles_fix_step3": "3. Aggiungi l'ID a 'staff_roles' in {path}:",
+      "dev_mode_note": "🔍 Nota: Devi abilitare 'Modalità Sviluppatore' in Discord:",
+      "dev_mode_step": "Impostazioni Utente → Avanzate → Modalità Sviluppatore",
+      "id_hint": "Deve essere un ID Discord numerico",
+      "fix_option1": "Opzione 1: Usa un ID Discord numerico valido",
+      "fix_option2": "Opzione 2: Imposta a null se vuoi disabilitare",
+      "copy_id_title": "🔍 Come copiare ID:",
+      "copy_id_step1": "1. Abilita Modalità Sviluppatore in Discord",
+      "copy_id_step2": "2. Click destro su canale/ruolo → Copia ID",
+      "check_syntax": "1. Controlla la sintassi JSON del file",
+      "check_commas": "2. Assicurati che non ci siano virgole extra o parentesi non chiuse"
+    },
+    "errors": {
+      "core_invalid_title": "Config Core Invalido",
+      "core_incomplete_title": "Config Core Incompleto",
+      "core_empty_warning": "⚠️  ATTENZIONE: Campi core vuoti: {fields}",
+      "add_missing_fields": "Aggiungi i campi mancanti al file di configurazione:"
     }
   },
   "auto_updater": {

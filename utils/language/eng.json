@@ -147,7 +147,28 @@
       "error_values": "PLUGIN ERROR - INVALID VALUES",
       "file_corrupted": "Configuration file is corrupted or invalid!",
       "missing_fields": "Required fields missing:",
-      "invalid_value": "Field '{field}' contains invalid value '{value}'. {hint}"
+      "invalid_value": "Field '{field}' contains invalid value '{value}'. {hint}",
+      "staff_roles_error": "MODERATION PLUGIN ERROR - STAFF_ROLES EMPTY",
+      "staff_roles_empty": "The 'staff_roles' field is empty or not a list!",
+      "staff_roles_fix_step1": "1. Go to your Discord server",
+      "staff_roles_fix_step2": "2. Server Settings → Roles → Right click on staff role → Copy ID",
+      "staff_roles_fix_step3": "3. Add the ID to 'staff_roles' in {path}:",
+      "dev_mode_note": "🔍 Note: You must enable 'Developer Mode' in Discord:",
+      "dev_mode_step": "User Settings → Advanced → Developer Mode",
+      "id_hint": "Must be a numeric Discord ID",
+      "fix_option1": "Option 1: Use a valid numeric Discord ID",
+      "fix_option2": "Option 2: Set to null to disable",
+      "copy_id_title": "🔍 How to copy ID:",
+      "copy_id_step1": "1. Enable Developer Mode in Discord",
+      "copy_id_step2": "2. Right click on channel/role → Copy ID",
+      "check_syntax": "1. Check the file's JSON syntax",
+      "check_commas": "2. Ensure there are no extra commas or unclosed brackets"
+    },
+    "errors": {
+      "core_invalid_title": "Invalid Core Config",
+      "core_incomplete_title": "Incomplete Core Config",
+      "core_empty_warning": "⚠️  WARNING: Empty core fields: {fields}",
+      "add_missing_fields": "Add missing fields to configuration file:"
     }
   },
   "auto_updater": {
