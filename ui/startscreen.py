@@ -6,6 +6,7 @@ from datetime import datetime
 import sys
 import queue
 import os
+from utils.language_manager import get_text
 
 # Configurazione Colori
 COLORS = {
@@ -207,7 +208,7 @@ class BotDashboard(ctk.CTk):
         
         self.status_badge = ctk.CTkLabel(
             header,
-            text="● STARTING...",
+            text=f"● {get_text('ui.status.starting')}",
             font=("Roboto", 12, "bold"),
             text_color=COLORS["warning"],  # Giallo mentre si avvia
             fg_color=COLORS["card_bg"],
@@ -291,12 +292,12 @@ class BotDashboard(ctk.CTk):
                     # Aggiorna badge status
                     if data == "online":
                         self.status_badge.configure(
-                            text="● ONLINE",
+                            text=f"● {get_text('ui.status.online')}",
                             text_color=COLORS["success"]
                         )
                     elif data == "offline":
                         self.status_badge.configure(
-                            text="● OFFLINE",
+                            text=f"● {get_text('ui.status.offline')}",
                             text_color=COLORS["error"]
                         )
                     
@@ -434,7 +435,7 @@ class BotDashboard(ctk.CTk):
         
         ctk.CTkButton(
             btn_frame,
-            text="CHIUDI E CORREGGI CONFIG",
+            text=get_text('ui.error_popup.button'),
             font=("Roboto", 14, "bold"),
             fg_color=COLORS["error"],
             hover_color="#c0392b",
