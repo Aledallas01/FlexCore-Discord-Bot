@@ -518,11 +518,29 @@ def main():
             print(f"✅ {get_text('auto_updater.restart_required')}")
             print("="*70)
             print(f"\n⚠️  {get_text('auto_updater.restart_warning')}")
-            print(f"\n{get_text('auto_updater.restart_instructions')}")
-            print(f"  {get_text('auto_updater.restart_command')}")
             print(f"\n{get_text('auto_updater.restart_countdown')}")
+            
             import time
-            time.sleep(5)
+            import subprocess
+            time.sleep(3)
+            
+            # Riavvio automatico
+            print(f"🔄 {get_text('auto_updater.auto_restart')}")
+            
+            # Ottieni path assoluto dello script
+            script_path = os.path.abspath(__file__)
+            args = [sys.executable, script_path]
+            
+            # Aggiungi eventuali argomenti passati all'avvio originale
+            if len(sys.argv) > 1:
+                args.extend(sys.argv[1:])
+                
+            # Lancia nuovo processo
+            if os.name == 'nt':
+                subprocess.Popen(args, creationflags=subprocess.CREATE_NEW_CONSOLE)
+            else:
+                subprocess.Popen(args)
+            
             sys.exit(0)
             
     except Exception as e:

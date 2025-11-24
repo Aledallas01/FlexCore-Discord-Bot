@@ -175,6 +175,7 @@
     "success_count": "{updated}/{total} file aggiornati con successo",
     "restart_required": "AGGIORNAMENTI APPLICATI CON SUCCESSO!",
     "restart_warning": "RIAVVIO NECESSARIO",
+    "auto_restart": "Riavvio automatico in corso...",
     "restart_instructions": "Per applicare le modifiche, riavvia il bot manualmente:",
     "restart_command": "→ python bot.py",
     "restart_countdown": "Il programma terminerà tra 5 secondi...",
