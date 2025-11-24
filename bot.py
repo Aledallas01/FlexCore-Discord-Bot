@@ -500,11 +500,13 @@ def main():
             print("="*70)
             print("\n🔄 Riavvio automatico del bot in 3 secondi...")
             import time
+            import subprocess
             time.sleep(3)
             
-            # Riavvia il processo Python
-            import os
-            os.execv(sys.executable, ['python'] + sys.argv)
+            # Riavvia il processo Python usando subprocess (compatibile Windows)
+            python = sys.executable
+            subprocess.Popen([python] + sys.argv)
+            sys.exit(0)
             
     except Exception as e:
         print(f"⚠️  Auto-update non disponibile: {e}")
