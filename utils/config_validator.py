@@ -2,6 +2,7 @@ import json
 import os
 import sys
 from typing import Dict, List, Any, Optional
+from utils.language_manager import get_text
 
 # ANSI Color Codes per output leggibile
 class Colors:

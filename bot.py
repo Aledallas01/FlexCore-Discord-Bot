@@ -282,7 +282,7 @@ class DiscordBot:
             self.stats["commands_executed"] += 1
             
             # Log comando
-            print(f"💬 {ctx.author} usato: {ctx.command} in {ctx.guild.name if ctx.guild else 'DM'}")
+            print(f"💬 {ctx.author} {get_text('commands.executed', command=ctx.command, location=ctx.guild.name if ctx.guild else 'DM')}")
         
         @self.bot.event
         async def on_command_completion(ctx):
@@ -362,24 +362,24 @@ class DiscordBot:
         async def on_guild_join(guild):
             """Evento quando il bot entra in un server"""
             self.stats["guilds_joined"] += 1
-            print(f"➕ Aggiunto al server: {guild.name} (ID: {guild.id}) - {guild.member_count} membri")
+            print(f"➕ {get_text('servers.joined', name=guild.name, id=guild.id, members=guild.member_count)}")
         
         @self.bot.event
         async def on_guild_remove(guild):
             """Evento quando il bot viene rimosso da un server"""
             self.stats["guilds_left"] += 1
-            print(f"➖ Rimosso dal server: {guild.name} (ID: {guild.id})")
+            print(f"➖ {get_text('servers.left', name=guild.name, id=guild.id)}")
         
         @self.bot.event
         async def on_member_join(member):
             """Evento quando un membro si unisce a un server"""
             # Log (può essere esteso con auto-role, welcome messages, etc)
-            print(f"👋 {member} è entrato in {member.guild.name}")
+            print(f"👋 {get_text('members.joined', member=member, guild=member.guild.name)}")
         
         @self.bot.event
         async def on_member_remove(member):
             """Evento quando un membro lascia un server"""
-            print(f"👋 {member} ha lasciato {member.guild.name}")
+            print(f"👋 {get_text('members.left', member=member, guild=member.guild.name)}")
     
     async def start(self):
         """Avvia il bot e carica i plugin"""
@@ -539,23 +539,23 @@ def main():
         
         print(logo)
         print(f"{MAGENTA}{BOLD}{'═' * 88}{RESET}")
-        print(f"{YELLOW}{BOLD}                    🚀 SISTEMA PLUGIN MODULARE v2.0 - SUPER POTENTE 🚀{RESET}")
+        print(f"{YELLOW}{BOLD}                    {get_text('bot.startup.logo_title')}{RESET}")
         print(f"{MAGENTA}{BOLD}{'═' * 88}{RESET}\n")
         
         # System Information
-        print(f"{CYAN}{BOLD}📊 INFORMAZIONI SISTEMA{RESET}")
-        print(f"{BLUE}├─{RESET} 💻 OS: {YELLOW}{platform.system()} {platform.release()} ({platform.machine()}){RESET}")
-        print(f"{BLUE}├─{RESET} 🐍 Python: {YELLOW}{platform.python_version()}{RESET}")
-        print(f"{BLUE}├─{RESET} 📦 Discord.py: {YELLOW}{discord.__version__}{RESET}")
+        print(f"{CYAN}{BOLD}{get_text('system.info.title')}{RESET}")
+        print(f"{BLUE}├─{RESET} {get_text('system.info.os')}: {YELLOW}{platform.system()} {platform.release()} ({platform.machine()}){RESET}")
+        print(f"{BLUE}├─{RESET} {get_text('system.info.python')}: {YELLOW}{platform.python_version()}{RESET}")
+        print(f"{BLUE}├─{RESET} {get_text('system.info.discord_py')}: {YELLOW}{discord.__version__}{RESET}")
         
         # System Resources
         cpu_percent = psutil.cpu_percent(interval=0.5)
         memory = psutil.virtual_memory()
-        print(f"{BLUE}├─{RESET} 🔥 CPU: {YELLOW}{cpu_percent}%{RESET}")
-        print(f"{BLUE}├─{RESET} 💾 RAM: {YELLOW}{memory.percent}% ({memory.used / (1024**3):.1f}GB / {memory.total / (1024**3):.1f}GB){RESET}")
+        print(f"{BLUE}├─{RESET} {get_text('system.info.cpu')}: {YELLOW}{cpu_percent}%{RESET}")
+        print(f"{BLUE}├─{RESET} {get_text('system.info.ram')}: {YELLOW}{memory.percent}% ({memory.used / (1024**3):.1f}GB / {memory.total / (1024**3):.1f}GB){RESET}")
         
-        print(f"{BLUE}├─{RESET} 📅 Data: {YELLOW}{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}{RESET}")
-        print(f"{BLUE}└─{RESET} 📂 Directory: {YELLOW}{os.getcwd()}{RESET}\n")
+        print(f"{BLUE}├─{RESET} {get_text('system.info.date')}: {YELLOW}{datetime.now().strftime('%d/%m/%Y %H:%M:%S')}{RESET}")
+        print(f"{BLUE}└─{RESET} {get_text('system.info.directory')}: {YELLOW}{os.getcwd()}{RESET}\n")
         
         # Features SUPER POTENTI
         print(f"{CYAN}{BOLD}✨ CARATTERISTICHE SUPER POTENTI{RESET}")
@@ -571,7 +571,7 @@ def main():
         print(f"{GREEN}└─{RESET} ✅ Background Tasks per Automazione\n")
         
         # Loading message
-        print(f"{YELLOW}{BOLD}⚙️  INIZIALIZZAZIONE SISTEMA SUPER POTENTE...{RESET}\n")
+        print(f"{YELLOW}{BOLD}⚙️  {get_text('bot.startup.initializing')}{RESET}\n")
         print(f"{MAGENTA}{'─' * 88}{RESET}\n")
         
         # Start bot
@@ -582,7 +582,7 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print("\n\n⏹️  BOT ARRESTATO DALL'UTENTE\n")
+        print(f"\n\n⏹️  {get_text('general.stopped_by_user')}\n")
     except Exception as e:
-        print(f"\n\n❌ ERRORE CRITICO: {e}\n")
+        print(f"\n\n❌ {get_text('general.critical_error', error=e)}\n")
         sys.exit(1)
