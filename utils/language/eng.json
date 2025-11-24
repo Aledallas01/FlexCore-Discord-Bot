@@ -172,7 +172,12 @@
     "error_github": "Error checking GitHub: {error}",
     "error_getfiles": "Error retrieving modified files: {error}",
     "completed": "Update completed!",
-    "success_count": "{updated}/{total} files updated successfully"
+    "success_count": "{updated}/{total} files updated successfully",
+    "restart_required": "UPDATES APPLIED SUCCESSFULLY!",
+    "restart_warning": "RESTART REQUIRED",
+    "restart_instructions": "To apply changes, restart the bot manually:",
+    "restart_command": "→ python bot.py",
+    "restart_countdown": "Program will exit in 5 seconds..."
   },
   "moderation": {
     "config_loaded": "Moderation configuration loaded from {path}",

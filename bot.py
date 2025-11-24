@@ -496,16 +496,14 @@ def main():
         
         if update_applied:
             print("\n" + "="*70)
-            print("✅ AGGIORNAMENTI APPLICATI - RIAVVIO NECESSARIO")
+            print(f"✅ {get_text('auto_updater.restart_required')}")
             print("="*70)
-            print("\n🔄 Riavvio automatico del bot in 3 secondi...")
+            print(f"\n⚠️  {get_text('auto_updater.restart_warning')}")
+            print(f"\n{get_text('auto_updater.restart_instructions')}")
+            print(f"  {get_text('auto_updater.restart_command')}")
+            print(f"\n{get_text('auto_updater.restart_countdown')}")
             import time
-            import subprocess
-            time.sleep(3)
-            
-            # Riavvia il processo Python usando subprocess (compatibile Windows)
-            python = sys.executable
-            subprocess.Popen([python] + sys.argv)
+            time.sleep(5)
             sys.exit(0)
             
     except Exception as e:
