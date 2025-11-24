@@ -483,7 +483,7 @@ class BotDashboard(ctk.CTk):
 
 def run_ui(bot_queue, stop_event):
     """Avvia l'interfaccia UI con controllo errori configurazione"""
-    from config_validator import ConfigValidator
+    from utils.config_validator import ConfigValidator
     
     app = BotDashboard(bot_queue, stop_event)
     
