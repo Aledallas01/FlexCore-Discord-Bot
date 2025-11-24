@@ -19,6 +19,7 @@ class PluginLoader:
         self.plugins_dir = "plugins"
         self.config_path = os.path.join("config", "plugins.json")
         self.plugins_config = {}
+        self.plugin_status = {} # Tracks status: "active", "disabled", "error"
     
     def discover_plugins(self):
         """
@@ -122,11 +123,15 @@ class PluginLoader:
         disabled_count = 0
         error_count = 0
         
+        # Reset status
+        self.plugin_status = {}
+        
         for plugin_name, enabled in self.plugins_config.items():
             if enabled:
                 # Valida configurazione plugin
                 if not ConfigValidator.validate_plugin(plugin_name):
                     print(f"  ❌ {get_text('plugins.loading.error_config', name=plugin_name)}")
+                    self.plugin_status[plugin_name] = "error"
                     error_count += 1
                     continue
 
@@ -141,19 +146,24 @@ class PluginLoader:
                         cog_class = getattr(module, class_name)
                         await self.bot.add_cog(cog_class(self.bot))
                         print(f"  ✅ {get_text('plugins.loading.loaded', name=plugin_name)}")
+                        self.plugin_status[plugin_name] = "active"
                         loaded_count += 1
                     else:
                         print(f"  ⚠️  {get_text('plugins.loading.error_class', name=plugin_name, class_name=class_name)}")
+                        self.plugin_status[plugin_name] = "error"
                         error_count += 1
                         
                 except ModuleNotFoundError:
                     print(f"  ❌ {get_text('plugins.loading.error_file', name=plugin_name)}")
+                    self.plugin_status[plugin_name] = "error"
                     error_count += 1
                 except Exception as e:
                     print(f"  ❌ {get_text('plugins.loading.error_loading', name=plugin_name, error=e)}")
+                    self.plugin_status[plugin_name] = "error"
                     error_count += 1
             else:
                 print(f"  ⏭️  {get_text('plugins.loading.disabled', name=plugin_name)}")
+                self.plugin_status[plugin_name] = "disabled"
                 disabled_count += 1
         
         print("━" * 50)

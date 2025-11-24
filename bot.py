@@ -420,6 +420,10 @@ class DiscordBot:
                 }
                 bot_queue.put(("stats", stats))
                 
+                # Invia stato plugin
+                if hasattr(self, "plugin_loader"):
+                    bot_queue.put(("plugins_status", self.plugin_loader.plugin_status))
+                
                 # Info statiche (una tantum)
                 if not hasattr(self, "_ui_info_sent"):
                     info = {
@@ -434,7 +438,7 @@ class DiscordBot:
                     
             except Exception:
                 pass
-            await asyncio.sleep(1)
+            await asyncio.sleep(2) # Rallenta leggermente per non spammare la queue
 
 class StreamRedirector:
     """Reindirizza stdout/stderr alla queue della UI"""
