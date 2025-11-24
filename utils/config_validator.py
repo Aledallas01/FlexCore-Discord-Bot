@@ -41,6 +41,19 @@ class ConfigValidator:
     @staticmethod
     def _load_json(path: str) -> Optional[Dict[str, Any]]:
         """Carica un file JSON in modo sicuro"""
+        if not os.path.exists(path):
+            return None
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"❌ {get_text('general.json_read_error', path=path, error=e)}")
+            return None
+
+    @classmethod
+    def validate_core(cls) -> bool:
+        """
+        Valida la configurazione principale (config.json).
         Ritorna True se valida, altrimenti stampa errore e ritorna False.
         """
         config_path = os.path.join("config", "config.json")
@@ -111,20 +124,13 @@ class ConfigValidator:
         Ritorna True se valida (o se non c'è schema), False se invalida.
         """
         # Se non c'è uno schema definito per questo plugin, assumiamo sia ok
-        # (o che non abbia config)
         if plugin_name not in cls.PLUGIN_SCHEMAS:
             return True
 
         config_path = os.path.join("config", f"{plugin_name}.json")
         
-        # Se il file non esiste ma c'è uno schema, è un problema?
-        # Dipende se il plugin crea il default. 
-        # Assumiamo che se il plugin è abilitato, il config dovrebbe esistere o essere creato.
-        # Ma il validatore gira PRIMA del caricamento.
-        # Se il file non esiste, il plugin di solito usa i default.
-        # Quindi se manca il file, diamo un Warning ma non blocchiamo (il plugin userà i default).
+        # Se il file non esiste, il plugin userà i default
         if not os.path.exists(config_path):
-            # print(f"ℹ️  Config {plugin_name}.json non trovato, userà default.")
             return True
 
         config = cls._load_json(config_path)
@@ -156,26 +162,10 @@ class ConfigValidator:
             print(f"{Colors.RED}{'='*70}{Colors.RESET}\n")
             return False
 
-        # --- VALIDAZIONE SPECIFICA VALORI ---
-        
+        # Validazione specifica valori per moderation
         if plugin_name == "moderation":
-            # 1. Controllo Ruoli Staff (deve essere lista non vuota di ID numerici)
             staff_roles = config.get("staff_roles")
             if not staff_roles or not isinstance(staff_roles, list) or len(staff_roles) == 0:
-                error_msg = (
-                    "ERRORE PLUGIN MODERATION\n\n"
-                    f"File: {config_path}\n\n"
-                    "Il campo 'staff_roles' è vuoto o non è una lista!\n\n"
-                    "Come risolvere:\n"
-                    "1. Vai sul tuo server Discord\n"
-                    "2. Impostazioni Server → Ruoli → Click destro sul ruolo staff → Copia ID\n"
-                    f"3. Aggiungi l'ID a 'staff_roles' in {config_path}:\n"
-                    '   "staff_roles": [123456789012345678]\n\n'
-                    "🔍 Nota: Devi abilitare 'Modalità Sviluppatore' in Discord:\n"
-                    "   Impostazioni Utente → Avanzate → Modalità Sviluppatore"
-                )
-                cls.last_error = {"title": "Staff Roles Vuoto", "message": error_msg}
-                
                 print(f"\n{Colors.RED}{Colors.BOLD}{'='*70}{Colors.RESET}")
                 print(f"{Colors.RED}{Colors.BOLD}❌ ERRORE PLUGIN MODERATION - STAFF_ROLES VUOTO{Colors.RESET}")
                 print(f"{Colors.RED}{'='*70}{Colors.RESET}")
@@ -192,12 +182,10 @@ class ConfigValidator:
                 print(f"{Colors.RED}{'='*70}{Colors.RESET}\n")
                 return False
                 
-            # 2. Controllo validità ID Discord (devono essere numerici se presenti)
+            # Controllo validità ID Discord
             for key in ["log_channel_id", "mute_role_id"]:
                 val = config.get(key)
-                # Se il valore è presente e non è null
                 if val is not None and val != "":
-                    # Se è stringa, deve essere convertibile in int (ID Discord valido)
                     if isinstance(val, str):
                         try:
                             int(val)
