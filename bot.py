@@ -461,7 +461,7 @@ def main():
     # 🔄 AUTO-UPDATE CHECK (se abilitato)
     if config.get("auto_update", False):
         try:
-            from auto_updater import AutoUpdater
+            from utils.auto_updater import AutoUpdater
             updater = AutoUpdater()
             updater.check_and_apply()
         except Exception as e:
