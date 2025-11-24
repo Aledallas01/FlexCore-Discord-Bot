@@ -257,6 +257,7 @@ class DiscordBot:
                 print(f"{GREEN}   {get_text('commands.sync.unique_available')}{RESET}\n")
                     
             except Exception as e:
+                RED = "\033[91m"
                 print(f"{RED}❌ {get_text('commands.sync.error', error=e)}{RESET}")
             
             print(f"{GREEN}{BOLD}{'─' * 88}{RESET}")

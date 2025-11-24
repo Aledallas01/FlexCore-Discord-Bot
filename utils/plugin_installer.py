@@ -6,7 +6,7 @@ from typing import List, Dict, Optional
 class PluginInstaller:
     """Gestisce il download e l'installazione dei plugin da GitHub"""
     
-    REPO_API_URL = "https://api.github.com/repos/Aledallas01/FlexCore-Plugins/contents/"
+    REPO_API_URL = "https://api.github.com/repos/Aledallas01/FlexCore-Plugins/plugins/"
     PLUGINS_DIR = "plugins"
 
     @staticmethod
