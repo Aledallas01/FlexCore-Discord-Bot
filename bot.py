@@ -16,19 +16,24 @@ from typing import Optional, Dict
 from collections import defaultdict
 from utils.loader import PluginLoader
 from utils.config_validator import ConfigValidator
+from utils.language_manager import init_language, get_text
 
 
 class DiscordBot:
     """Bot Discord Super Potente con sistema di plugin modulare e monitoring avanzato"""
     
     def __init__(self):
-        # Valida configurazione core PRIMA di tutto
-        if not ConfigValidator.validate_core():
-            print("❌ Impossibile avviare il bot: Configurazione invalida.")
-            sys.exit(1)
-
-        # Carica configurazione
+        # Carica configurazione (prima per ottenere la lingua)
         self.config = self.load_config()
+        
+        # Inizializza sistema lingue PRIMA della validazione
+        lang_code = self.config.get('language', 'ita')
+        init_language(lang_code)
+        
+        # Valida configurazione core (ora con messaggi tradotti)
+        if not ConfigValidator.validate_core():
+            print(f"❌ {get_text('bot.config.invalid')}")
+            sys.exit(1)
         
         # Statistiche bot
         self.stats = {
@@ -89,10 +94,12 @@ class DiscordBot:
             with open(config_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
         except FileNotFoundError:
-            print(f"❌ Errore: File {config_path} non trovato!")
+            # NOTE: Hardcoded perché viene chiamato prima di init_language()
+            print(f"❌ Error: File {config_path} not found!")
             sys.exit(1)
         except json.JSONDecodeError as e:
-            print(f"❌ Errore nel parsing di {config_path}: {e}")
+            # NOTE: Hardcoded perché viene chiamato prima di init_language()
+            print(f"❌ Error parsing {config_path}: {e}")
             sys.exit(1)
     
     def start_background_tasks(self):
@@ -122,14 +129,14 @@ class DiscordBot:
         await self.bot.wait_until_ready()
         
         uptime = self._get_uptime()
-        print(f"\n📊 STATISTICHE BOT ({datetime.now().strftime('%H:%M:%S')})")
-        print(f"├─ Uptime: {uptime}")
-        print(f"├─ Server: {len(self.bot.guilds)}")
-        print(f"├─ Utenti: {len(set(self.bot.get_all_members()))}")
-        print(f"├─ Comandi eseguiti: {self.stats['commands_executed']}")
-        print(f"├─ Messaggi visti: {self.stats['messages_seen']}")
-        print(f"├─ Errori: {self.stats['errors']}")
-        print(f"└─ Latency: {round(self.bot.latency * 1000)}ms\n")
+        print(f"\n📊 {get_text('stats.title')} ({datetime.now().strftime('%H:%M:%S')})")
+        print(f"├─ {get_text('stats.uptime')}: {uptime}")
+        print(f"├─ {get_text('stats.servers_count')}: {len(self.bot.guilds)}")
+        print(f"├─ {get_text('stats.users_count')}: {len(set(self.bot.get_all_members()))}")
+        print(f"├─ {get_text('stats.commands_executed')}: {self.stats['commands_executed']}")
+        print(f"├─ {get_text('stats.messages_seen')}: {self.stats['messages_seen']}")
+        print(f"├─ {get_text('stats.errors_count')}: {self.stats['errors']}")
+        print(f"└─ {get_text('stats.latency')}: {round(self.bot.latency * 1000)}ms\n")
     
     def _get_uptime(self) -> str:
         """Calcola uptime del bot"""
@@ -177,40 +184,40 @@ class DiscordBot:
             
             print()
             print(f"{MAGENTA}{BOLD}{'═' * 88}{RESET}")
-            print(f"{GREEN}{BOLD}🎉 BOT CONNESSO CON SUCCESSO! 🎉{RESET}".center(88 + len(RESET) + len(GREEN) + len(BOLD)))
+            print(f"{GREEN}{BOLD}{get_text('bot.startup.connected')}{RESET}".center(88 + len(RESET) + len(GREEN) + len(BOLD)))
             print(f"{MAGENTA}{BOLD}{'═' * 88}{RESET}\n")
             
             # Bot Info
-            print(f"{CYAN}{BOLD}🤖 INFORMAZIONI BOT{RESET}")
-            print(f"{YELLOW}├─{RESET} 👤 Username: {GREEN}{BOLD}{self.bot.user.name}#{self.bot.user.discriminator}{RESET}")
-            print(f"{YELLOW}├─{RESET} 🆔 ID: {GREEN}{self.bot.user.id}{RESET}")
-            print(f"{YELLOW}├─{RESET} 📊 Server: {GREEN}{BOLD}{len(self.bot.guilds)}{RESET}")
-            print(f"{YELLOW}├─{RESET} 👥 Utenti Totali: {GREEN}{BOLD}{len(set(self.bot.get_all_members()))}{RESET}")
-            print(f"{YELLOW}├─{RESET} 🔌 Plugin Attivi: {GREEN}{BOLD}{len(self.bot.cogs)}{RESET}")
-            print(f"{YELLOW}├─{RESET} 📝 Comandi Text: {GREEN}{BOLD}{len([c for c in self.bot.commands])}{RESET}")
-            print(f"{YELLOW}├─{RESET} ⚡ Slash Commands: {GREEN}{BOLD}{len(self.bot.tree.get_commands())}{RESET}")
-            print(f"{YELLOW}└─{RESET} 🏓 Latency: {GREEN}{BOLD}{round(self.bot.latency * 1000)}ms{RESET}\n")
+            print(f"{CYAN}{BOLD}{get_text('system.bot_info.title')}{RESET}")
+            print(f"{YELLOW}├─{RESET} {get_text('system.bot_info.username')}: {GREEN}{BOLD}{self.bot.user.name}#{self.bot.user.discriminator}{RESET}")
+            print(f"{YELLOW}├─{RESET} {get_text('system.bot_info.id')}: {GREEN}{self.bot.user.id}{RESET}")
+            print(f"{YELLOW}├─{RESET} {get_text('system.bot_info.servers')}: {GREEN}{BOLD}{len(self.bot.guilds)}{RESET}")
+            print(f"{YELLOW}├─{RESET} {get_text('system.bot_info.users')}: {GREEN}{BOLD}{len(set(self.bot.get_all_members()))}{RESET}")
+            print(f"{YELLOW}├─{RESET} {get_text('system.bot_info.plugins')}: {GREEN}{BOLD}{len(self.bot.cogs)}{RESET}")
+            print(f"{YELLOW}├─{RESET} {get_text('system.bot_info.text_commands')}: {GREEN}{BOLD}{len([c for c in self.bot.commands])}{RESET}")
+            print(f"{YELLOW}├─{RESET} {get_text('system.bot_info.slash_commands')}: {GREEN}{BOLD}{len(self.bot.tree.get_commands())}{RESET}")
+            print(f"{YELLOW}└─{RESET} {get_text('system.bot_info.latency')}: {GREEN}{BOLD}{round(self.bot.latency * 1000)}ms{RESET}\n")
             
             # System Info
             sys_info = self._get_system_info()
-            print(f"{CYAN}{BOLD}💻 RISORSE SISTEMA{RESET}")
+            print(f"{CYAN}{BOLD}{get_text('system.resources.title')}{RESET}")
             print(f"{BLUE}├─{RESET} CPU: {YELLOW}{sys_info['cpu']}{RESET}")
             print(f"{BLUE}├─{RESET} RAM: {YELLOW}{sys_info['ram']}{RESET} ({sys_info['ram_used']}/{sys_info['ram_total']})")
-            print(f"{BLUE}└─{RESET} Processi: {YELLOW}{len(psutil.pids())}{RESET}\n")
+            print(f"{BLUE}└─{RESET} {get_text('system.info.processes')}: {YELLOW}{len(psutil.pids())}{RESET}\n")
             
             # Server List
             if len(self.bot.guilds) > 0:
-                print(f"{CYAN}{BOLD}🌐 SERVER CONNESSI{RESET}")
+                print(f"{CYAN}{BOLD}{get_text('servers.title')}{RESET}")
                 for i, guild in enumerate(self.bot.guilds[:5], 1):  # Max 5 per evitare spam
                     symbol = "└─" if i == min(5, len(self.bot.guilds)) else "├─"
-                    print(f"{YELLOW}{symbol}{RESET} 🏰 {guild.name} ({guild.member_count} membri)")
+                    print(f"{YELLOW}{symbol}{RESET} 🏰 {guild.name} ({guild.member_count} {get_text('servers.members')})")
                 if len(self.bot.guilds) > 5:
-                    print(f"{YELLOW}└─{RESET} ... e altri {len(self.bot.guilds) - 5} server")
+                    print(f"{YELLOW}└─{RESET} {get_text('servers.and_more', count=len(self.bot.guilds) - 5)}")
                 print()
             
             # Plugin List
             if len(self.bot.cogs) > 0:
-                print(f"{CYAN}{BOLD}🔌 PLUGIN CARICATI{RESET}")
+                print(f"{CYAN}{BOLD}{get_text('plugins.list.title')}{RESET}")
                 for i, (name, cog) in enumerate(self.bot.cogs.items(), 1):
                     symbol = "└─" if i == len(self.bot.cogs) else "├─"
                     # Conta comandi text
@@ -235,25 +242,25 @@ class DiscordBot:
             )
             
             # 🔥 SINCRONIZZAZIONE SLASH COMMANDS (Fix Duplicati) 🔥
-            print(f"{YELLOW}⚙️  Sincronizzazione slash commands...{RESET}")
+            print(f"{YELLOW}⚙️  {get_text('commands.sync.syncing')}{RESET}")
             
             try:
                 # 1. Pulisci comandi locali dei server (rimuove i duplicati)
-                print(f"{YELLOW}   Pulizia duplicati dai server...{RESET}")
+                print(f"{YELLOW}   {get_text('commands.sync.cleaning')}{RESET}")
                 for guild in self.bot.guilds:
                     self.bot.tree.clear_commands(guild=guild)
                     await self.bot.tree.sync(guild=guild)
                 
                 # 2. Sync Globale (Unica fonte di verità)
                 synced = await self.bot.tree.sync()
-                print(f"{GREEN}✅ Sincronizzati {len(synced)} slash commands globalmente!{RESET}")
-                print(f"{GREEN}   I comandi sono ora unici e disponibili su tutti i server.{RESET}\n")
+                print(f"{GREEN}✅ {get_text('commands.sync.synced_global', count=len(synced))}{RESET}")
+                print(f"{GREEN}   {get_text('commands.sync.unique_available')}{RESET}\n")
                     
             except Exception as e:
-                print(f"{RED}❌ Errore sincronizzazione: {e}{RESET}")
+                print(f"{RED}❌ {get_text('commands.sync.error', error=e)}{RESET}")
             
             print(f"{GREEN}{BOLD}{'─' * 88}{RESET}")
-            print(f"{GREEN}{BOLD}✅ BOT OPERATIVO E PRONTO ALL'USO! ✅{RESET}".center(88 + len(RESET) + len(GREEN) + len(BOLD)))
+            print(f"{GREEN}{BOLD}{get_text('bot.startup.ready')}{RESET}".center(88 + len(RESET) + len(GREEN) + len(BOLD)))
             print(f"{GREEN}{BOLD}{'─' * 88}{RESET}\n")
         
         @self.bot.event

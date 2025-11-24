@@ -8,6 +8,7 @@ from pathlib import Path
 
 
 from utils.config_validator import ConfigValidator
+from utils.language_manager import get_text
 
 
 class PluginLoader:
@@ -27,7 +28,7 @@ class PluginLoader:
         plugins_path = Path(self.plugins_dir)
         
         if not plugins_path.exists():
-            print(f"⚠️  Cartella {self.plugins_dir}/ non trovata!")
+            print(f"⚠️  {get_text('general.folder_not_found', folder=self.plugins_dir)}")
             return []
         
         # Trova tutti i file .py eccetto __init__.py
@@ -72,7 +73,7 @@ class PluginLoader:
         for plugin_name in discovered_plugins:
             if plugin_name not in self.plugins_config:
                 self.plugins_config[plugin_name] = True
-                print(f"  ➕ Nuovo plugin '{plugin_name}' aggiunto (abilitato di default)")
+                print(f"  ➕ {get_text('plugins.loading.new_added', name=plugin_name)}")
                 updated = True
         
         # Rimuovi plugin che non esistono più (opzionale)
@@ -83,7 +84,7 @@ class PluginLoader:
         
         for plugin_name in plugins_to_remove:
             del self.plugins_config[plugin_name]
-            print(f"  ➖ Plugin '{plugin_name}' rimosso (file non trovato)")
+            print(f"  ➖ {get_text('plugins.loading.removed', name=plugin_name)}")
             updated = True
         
         if updated:
@@ -96,25 +97,25 @@ class PluginLoader:
         Carica tutti i plugin abilitati
         Supporta sia comandi text che slash commands
         """
-        print("🔌 Sistema di caricamento plugin avviato")
+        print(f"🔌 {get_text('plugins.loading.title')}")
         print("━" * 50)
         
         # 1. Carica configurazione esistente
         self.load_plugins_config()
         
         # 2. Scopri plugin nella cartella
-        print("🔍 Scansione cartella plugins/...")
+        print(f"🔍 {get_text('plugins.loading.scanning')}")
         discovered_plugins = self.discover_plugins()
-        print(f"   Trovati {len(discovered_plugins)} plugin: {', '.join(discovered_plugins)}")
+        print(f"   {get_text('plugins.loading.found', count=len(discovered_plugins), names=', '.join(discovered_plugins))}")
         print()
         
         # 3. Aggiorna configurazione con nuovi plugin
-        print("📝 Aggiornamento configurazione...")
+        print(f"📝 {get_text('plugins.loading.updating_config')}")
         self.update_plugins_config(discovered_plugins)
         print()
         
         # 4. Carica i plugin abilitati
-        print("⚙️  Caricamento plugin abilitati...")
+        print(f"⚙️  {get_text('plugins.loading.loading_enabled')}")
         print("━" * 50)
         
         loaded_count = 0
@@ -125,7 +126,7 @@ class PluginLoader:
             if enabled:
                 # Valida configurazione plugin
                 if not ConfigValidator.validate_plugin(plugin_name):
-                    print(f"  ❌ Plugin '{plugin_name}' saltato: Configurazione invalida")
+                    print(f"  ❌ {get_text('plugins.loading.error_config', name=plugin_name)}")
                     error_count += 1
                     continue
 
@@ -139,24 +140,24 @@ class PluginLoader:
                     if hasattr(module, class_name):
                         cog_class = getattr(module, class_name)
                         await self.bot.add_cog(cog_class(self.bot))
-                        print(f"  ✅ Plugin '{plugin_name}' caricato")
+                        print(f"  ✅ {get_text('plugins.loading.loaded', name=plugin_name)}")
                         loaded_count += 1
                     else:
-                        print(f"  ⚠️  Plugin '{plugin_name}': classe {class_name} non trovata")
+                        print(f"  ⚠️  {get_text('plugins.loading.error_class', name=plugin_name, class_name=class_name)}")
                         error_count += 1
                         
                 except ModuleNotFoundError:
-                    print(f"  ❌ Plugin '{plugin_name}': file non trovato")
+                    print(f"  ❌ {get_text('plugins.loading.error_file', name=plugin_name)}")
                     error_count += 1
                 except Exception as e:
-                    print(f"  ❌ Errore caricamento '{plugin_name}': {e}")
+                    print(f"  ❌ {get_text('plugins.loading.error_loading', name=plugin_name, error=e)}")
                     error_count += 1
             else:
-                print(f"  ⏭️  Plugin '{plugin_name}' disabilitato")
+                print(f"  ⏭️  {get_text('plugins.loading.disabled', name=plugin_name)}")
                 disabled_count += 1
         
         print("━" * 50)
-        print(f"📊 Riepilogo: {loaded_count} caricati, {disabled_count} disabilitati, {error_count} errori")
+        print(f"📊 {get_text('plugins.loading.summary', loaded=loaded_count, disabled=disabled_count, errors=error_count)}")
         print("━" * 50)
         
         return loaded_count, disabled_count, error_count
