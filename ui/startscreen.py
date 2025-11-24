@@ -195,6 +195,18 @@ class BotDashboard(ctk.CTk):
         footer = ctk.CTkFrame(self.sidebar, fg_color="transparent")
         footer.pack(side="bottom", fill="x", padx=20, pady=20)
         
+        self.btn_store = ctk.CTkButton(
+            footer, 
+            text=f"🛒 {get_text('ui.store.title')}",
+            font=("Roboto", 12, "bold"),
+            fg_color=COLORS["accent"], 
+            hover_color="#5a82d8",
+            height=35,
+            corner_radius=6,
+            command=self.open_store
+        )
+        self.btn_store.pack(fill="x", pady=(0, 8))
+        
         self.btn_restart = ctk.CTkButton(
             footer, 
             text="RIAVVIA",
@@ -400,6 +412,9 @@ class BotDashboard(ctk.CTk):
         if "id" in info: self.lbl_bot_id.configure(text=str(info['id']))
         if "servers" in info: self.lbl_servers.configure(text=str(info['servers']))
     
+    def open_store(self):
+        PluginStoreWindow(self)
+
     def show_error_popup(self, title, message):
         error_window = ctk.CTkToplevel(self)
         error_window.title(f"❌ {title}")
@@ -450,6 +465,117 @@ class BotDashboard(ctk.CTk):
         self.stop_event.set()
         self.destroy()
         sys.exit(0)
+
+class PluginStoreWindow(ctk.CTkToplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.title(f"🛒 {get_text('ui.store.title')}")
+        self.geometry("800x600")
+        self.resizable(False, False)
+        self.lift()
+        self.focus_force()
+        self.grab_set()
+        
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+        
+        # Header
+        header = ctk.CTkFrame(self, fg_color="transparent")
+        header.grid(row=0, column=0, sticky="ew", padx=20, pady=20)
+        
+        ctk.CTkLabel(
+            header, 
+            text=get_text('ui.store.browse'), 
+            font=("Roboto", 24, "bold"),
+            text_color=COLORS["text_main"]
+        ).pack(side="left")
+        
+        self.status_lbl = ctk.CTkLabel(header, text="", font=("Roboto", 12), text_color=COLORS["text_dim"])
+        self.status_lbl.pack(side="right")
+        
+        # List Container
+        self.scroll_frame = ctk.CTkScrollableFrame(self, fg_color="transparent")
+        self.scroll_frame.grid(row=1, column=0, sticky="nsew", padx=20, pady=(0, 20))
+        self.scroll_frame.grid_columnconfigure(0, weight=1)
+        
+        # Loading
+        self.loading_lbl = ctk.CTkLabel(self.scroll_frame, text="Loading...", font=("Roboto", 16))
+        self.loading_lbl.pack(pady=50)
+        
+        # Start fetch in thread
+        threading.Thread(target=self.fetch_plugins, daemon=True).start()
+        
+    def fetch_plugins(self):
+        from utils.plugin_installer import PluginInstaller
+        plugins = PluginInstaller.get_available_plugins()
+        self.after(0, lambda: self.show_plugins(plugins))
+        
+    def show_plugins(self, plugins):
+        self.loading_lbl.destroy()
+        
+        if not plugins:
+            ctk.CTkLabel(self.scroll_frame, text=get_text('ui.store.empty'), font=("Roboto", 16)).pack(pady=50)
+            return
+            
+        from utils.plugin_installer import PluginInstaller
+        
+        for p in plugins:
+            self.create_plugin_row(p, PluginInstaller.is_installed(p['name']))
+            
+    def create_plugin_row(self, plugin_data, is_installed):
+        row = ctk.CTkFrame(self.scroll_frame, fg_color=COLORS["card_bg"], corner_radius=10)
+        row.pack(fill="x", pady=5)
+        
+        # Icon & Name
+        info_frame = ctk.CTkFrame(row, fg_color="transparent")
+        info_frame.pack(side="left", padx=15, pady=15)
+        
+        ctk.CTkLabel(info_frame, text="📦", font=("Segoe UI Emoji", 24)).pack(side="left", padx=(0, 10))
+        
+        text_frame = ctk.CTkFrame(info_frame, fg_color="transparent")
+        text_frame.pack(side="left")
+        
+        name = plugin_data['name'].replace('.py', '').capitalize()
+        ctk.CTkLabel(text_frame, text=name, font=("Roboto", 16, "bold"), text_color=COLORS["text_main"]).pack(anchor="w")
+        ctk.CTkLabel(text_frame, text=f"{plugin_data['size']} bytes", font=("Roboto", 11), text_color=COLORS["text_dim"]).pack(anchor="w")
+        
+        # Action Button
+        btn_text = get_text('ui.store.installed') if is_installed else get_text('ui.store.install')
+        btn_color = COLORS["success"] if is_installed else COLORS["accent"]
+        btn_state = "disabled" if is_installed else "normal"
+        
+        # Se installato, permetti aggiornamento (opzionale, per ora disabilitato se installato)
+        if is_installed:
+             btn_text = get_text('ui.store.reinstall')
+             btn_color = COLORS["warning"]
+             btn_state = "normal"
+        
+        btn = ctk.CTkButton(
+            row,
+            text=btn_text,
+            font=("Roboto", 12, "bold"),
+            fg_color=btn_color,
+            width=100,
+            height=35,
+            state=btn_state
+        )
+        btn.configure(command=lambda b=btn, p=plugin_data: self.install_action(b, p))
+        btn.pack(side="right", padx=15)
+
+    def install_action(self, btn, plugin_data):
+        btn.configure(state="disabled", text=get_text('ui.store.downloading'))
+        threading.Thread(target=self._run_install, args=(btn, plugin_data), daemon=True).start()
+        
+    def _run_install(self, btn, plugin_data):
+        from utils.plugin_installer import PluginInstaller
+        success = PluginInstaller.install_plugin(plugin_data)
+        self.after(0, lambda: self._post_install(btn, success))
+        
+    def _post_install(self, btn, success):
+        if success:
+            btn.configure(text=get_text('ui.store.success'), fg_color=COLORS["success"])
+        else:
+            btn.configure(text=get_text('ui.store.error'), fg_color=COLORS["error"], state="normal")
 
 def run_ui(bot_queue, stop_event):
     from utils.config_validator import ConfigValidator

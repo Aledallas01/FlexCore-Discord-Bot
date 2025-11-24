@@ -129,6 +129,18 @@
     "error_popup": {
       "title": "Configuration Error",
       "button": "CLOSE AND FIX CONFIG"
+    },
+    "store": {
+      "title": "PLUGIN STORE",
+      "browse": "Browse Plugins",
+      "installed": "INSTALLED",
+      "install": "INSTALL",
+      "reinstall": "UPDATE",
+      "downloading": "Downloading...",
+      "success": "Installed!",
+      "error": "Error",
+      "empty": "No plugins found online",
+      "fetch_error": "GitHub connection error"
     }
   },
   "validation": {

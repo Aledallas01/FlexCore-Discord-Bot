@@ -129,6 +129,18 @@
     "error_popup": {
       "title": "Errore Configurazione",
       "button": "CHIUDI e CORREGGI CONFIGURAZIONE"
+    },
+    "store": {
+      "title": "STORE PLUGIN",
+      "browse": "Sfoglia Plugin",
+      "installed": "INSTALLATO",
+      "install": "INSTALLA",
+      "reinstall": "AGGIORNA",
+      "downloading": "Scaricamento...",
+      "success": "Installato!",
+      "error": "Errore",
+      "empty": "Nessun plugin trovato online",
+      "fetch_error": "Errore connessione GitHub"
     }
   },
   "validation": {
