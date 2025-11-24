@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 
-from config_validator import ConfigValidator
+from utils.config_validator import ConfigValidator
 
 
 class PluginLoader:

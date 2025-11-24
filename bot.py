@@ -14,8 +14,8 @@ import asyncio
 from datetime import datetime, timedelta
 from typing import Optional, Dict
 from collections import defaultdict
-from loader import PluginLoader
-from config_validator import ConfigValidator
+from utils.loader import PluginLoader
+from utils.config_validator import ConfigValidator
 
 
 class DiscordBot:
