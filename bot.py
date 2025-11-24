@@ -461,14 +461,38 @@ def main():
     # 🔥 AUTO-UPDATE PRIORITY - PRIMA DI TUTTO 🔥
     # Esegue SEMPRE il check aggiornamenti come prima cosa
     # Se ci sono bug nel codice corrente, vengono risolti prima di causare problemi
-    print("\n" + "="*70)
-    print("🔄 CONTROLLO AGGIORNAMENTI PRIORITARIO")
-    print("="*70)
+    
+    # Check per force update mode
+    force_update_mode = "-forceupdate" in sys.argv
+    
+    if force_update_mode:
+        print("\n" + "="*70)
+        print("🔄 MODALITÀ FORCE UPDATE - SOLO AGGIORNAMENTO")
+        print("="*70)
+        print("Il bot NON verrà avviato dopo l'update.\n")
+    else:
+        print("\n" + "="*70)
+        print("🔄 CONTROLLO AGGIORNAMENTI PRIORITARIO")
+        print("="*70)
     
     try:
         from utils.auto_updater import AutoUpdater
         updater = AutoUpdater()
         update_applied = updater.check_and_apply()
+        
+        if force_update_mode:
+            # Modalità force update: esci sempre dopo il check
+            if update_applied:
+                print("\n" + "="*70)
+                print("✅ AGGIORNAMENTI APPLICATI CON SUCCESSO")
+                print("="*70)
+                print("\nPuoi ora riavviare il bot con: python bot.py\n")
+            else:
+                print("\n" + "="*70)
+                print("ℹ️  NESSUN AGGIORNAMENTO DISPONIBILE")
+                print("="*70)
+                print("\nIl bot è già aggiornato all'ultima versione.\n")
+            sys.exit(0)
         
         if update_applied:
             print("\n" + "="*70)
@@ -479,16 +503,34 @@ def main():
             time.sleep(3)
             
             # Riavvia il processo Python
-            import sys
             import os
             os.execv(sys.executable, ['python'] + sys.argv)
             
     except Exception as e:
         print(f"⚠️  Auto-update non disponibile: {e}")
+        if force_update_mode:
+            print("\nImpossibile completare l'update. Controlla la connessione o i permessi.\n")
+            sys.exit(1)
         print("Continuo con l'avvio normale...\n")
     
     # Carica config per decidere modalità
     try:
+        with open(os.path.join('config', 'config.json'), 'r') as f:
+            config = json.load(f)
+    except:
+        config = {}
+    
+    startscreen_type = config.get("startscreen_type", "prompt")
+    
+    if startscreen_type == "UI" or startscreen_type == "ui":
+        # Modalità UI
+        import queue
+        import threading
+        from ui.startscreen import run_ui
+        
+        bot_queue = queue.Queue()
+        stop_event = threading.Event()
+        
         # Reindirizza stdout
         sys.stdout = StreamRedirector(bot_queue, sys.stdout)
         # sys.stderr = StreamRedirector(bot_queue, sys.stderr) # Opzionale
