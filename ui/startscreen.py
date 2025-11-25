@@ -467,115 +467,410 @@ class BotDashboard(ctk.CTk):
         sys.exit(0)
 
 class PluginStoreWindow(ctk.CTkToplevel):
+    """Enhanced Plugin Store with search, filters, metadata, and management"""
+    
     def __init__(self, parent):
         super().__init__(parent)
-        self.title(f"🛒 {get_text('ui.store.title')}")
-        self.geometry("800x600")
-        self.resizable(False, False)
+        self.title(get_text('ui.store.title'))
+        self.geometry("900x700")
+        self.resizable(True, True)
         self.lift()
         self.focus_force()
         self.grab_set()
         
+        self.all_plugins = []
+        self.filtered_plugins = []
+        self.current_filter = "all"
+        
         self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(1, weight=1)
+        self.grid_rowconfigure(2, weight=1)
         
         # Header
-        header = ctk.CTkFrame(self, fg_color="transparent")
-        header.grid(row=0, column=0, sticky="ew", padx=20, pady=20)
+        header = ctk.CTkFrame(self, fg_color=COLORS["card_bg"], height=80)
+        header.grid(row=0, column=0, sticky="ew", padx=0, pady=0)
+        header.grid_propagate(False)
+        
+        title_frame = ctk.CTkFrame(header, fg_color="transparent")
+        title_frame.pack(side="left", padx=20, pady=15)
         
         ctk.CTkLabel(
-            header, 
-            text=get_text('ui.store.browse'), 
+            title_frame,
+            text=get_text('ui.store.title'),
             font=("Roboto", 24, "bold"),
-            text_color=COLORS["text_main"]
-        ).pack(side="left")
+            text_color=COLORS["accent"]
+        ).pack(anchor="w")
         
-        self.status_lbl = ctk.CTkLabel(header, text="", font=("Roboto", 12), text_color=COLORS["text_dim"])
-        self.status_lbl.pack(side="right")
+        ctk.CTkLabel(
+            title_frame,
+            text=get_text('ui.store.subtitle'),
+            font=("Roboto", 12),
+            text_color=COLORS["text_dim"]
+        ).pack(anchor="w")
         
-        # List Container
-        self.scroll_frame = ctk.CTkScrollableFrame(self, fg_color="transparent")
-        self.scroll_frame.grid(row=1, column=0, sticky="nsew", padx=20, pady=(0, 20))
+        # Search Bar
+        search_frame = ctk.CTkFrame(self, fg_color="transparent")
+        search_frame.grid(row=1, column=0, sticky="ew", padx=20, pady=(15, 5))
+        search_frame.grid_columnconfigure(0, weight=1)
+        
+        self.search_entry = ctk.CTkEntry(
+            search_frame,
+            placeholder_text=get_text('ui.store.search_placeholder'),
+            height=40,
+            font=("Roboto", 13),
+            fg_color=COLORS["card_bg"],
+            border_color=COLORS["border"]
+        )
+        self.search_entry.grid(row=0, column=0, sticky="ew", padx=(0, 10))
+        self.search_entry.bind("<KeyRelease>", lambda e: self.apply_filters())
+        
+        # Filter Buttons
+        filter_frame = ctk.CTkFrame(search_frame, fg_color="transparent")
+        filter_frame.grid(row=0, column=1)
+        
+        self.filter_btns = {}
+        for idx, (key, label) in enumerate([
+            ("all", get_text('ui.store.filter_all')),
+            ("installed", get_text('ui.store.filter_installed')),
+            ("available", get_text('ui.store.filter_available'))
+        ]):
+            btn = ctk.CTkButton(
+                filter_frame,
+                text=label,
+                width=90,
+                height=40,
+                font=("Roboto", 12),
+                fg_color=COLORS["accent"] if key == "all" else COLORS["card_bg"],
+                hover_color=COLORS["accent"],
+                command=lambda k=key: self.set_filter(k)
+            )
+            btn.pack(side="left", padx=2)
+            self.filter_btns[key] = btn
+        
+        # Plugin List (Scrollable)
+        self.scroll_frame = ctk.CTkScrollableFrame(
+            self,
+            fg_color="transparent",
+            scrollbar_button_color=COLORS["accent"]
+        )
+        self.scroll_frame.grid(row=2, column=0, sticky="nsew", padx=20, pady=(10, 20))
         self.scroll_frame.grid_columnconfigure(0, weight=1)
         
         # Loading
-        self.loading_lbl = ctk.CTkLabel(self.scroll_frame, text="Loading...", font=("Roboto", 16))
+        self.loading_lbl = ctk.CTkLabel(
+            self.scroll_frame,
+            text="⏳ Loading plugins...",
+            font=("Roboto", 16),
+            text_color=COLORS["text_dim"]
+        )
         self.loading_lbl.pack(pady=50)
         
-        # Start fetch in thread
+        # Fetch plugins
         threading.Thread(target=self.fetch_plugins, daemon=True).start()
-        
+    
     def fetch_plugins(self):
+        """Fetch plugins from GitHub"""
         from utils.plugin_installer import PluginInstaller
-        plugins = PluginInstaller.get_available_plugins()
-        self.after(0, lambda: self.show_plugins(plugins))
-        
+        try:
+            plugins = PluginInstaller.get_available_plugins()
+            self.after(0, lambda: self.show_plugins(plugins))
+        except Exception as e:
+            self.after(0, lambda: self.show_error(str(e)))
+    
+    def show_error(self, error):
+        """Show error message"""
+        self.loading_lbl.configure(
+            text=get_text('ui.store.fetch_error') + f"\n{error}",
+            text_color=COLORS["error"]
+        )
+    
     def show_plugins(self, plugins):
+        """Display plugins list"""
         self.loading_lbl.destroy()
+        self.all_plugins = plugins
+        self.filtered_plugins = plugins
         
         if not plugins:
-            ctk.CTkLabel(self.scroll_frame, text=get_text('ui.store.empty'), font=("Roboto", 16)).pack(pady=50)
+            ctk.CTkLabel(
+                self.scroll_frame,
+                text=get_text('ui.store.empty'),
+                font=("Roboto", 16),
+                text_color=COLORS["text_dim"]
+            ).pack(pady=50)
             return
-            
+        
+        self.render_plugins()
+    
+    def apply_filters(self):
+        """Apply search and filter"""
         from utils.plugin_installer import PluginInstaller
         
-        for p in plugins:
-            self.create_plugin_row(p, PluginInstaller.is_installed(p['name']))
-            
-    def create_plugin_row(self, plugin_data, is_installed):
-        row = ctk.CTkFrame(self.scroll_frame, fg_color=COLORS["card_bg"], corner_radius=10)
-        row.pack(fill="x", pady=5)
+        query = self.search_entry.get().strip().lower()
+        filtered = self.all_plugins
         
-        # Icon & Name
-        info_frame = ctk.CTkFrame(row, fg_color="transparent")
-        info_frame.pack(side="left", padx=15, pady=15)
+        # Apply search
+        if query:
+            filtered = PluginInstaller.search_plugins(query, filtered)
         
-        ctk.CTkLabel(info_frame, text="📦", font=("Segoe UI Emoji", 24)).pack(side="left", padx=(0, 10))
+        # Apply filter
+        if self.current_filter == "installed":
+            filtered = [p for p in filtered if PluginInstaller.is_installed(p['name'])]
+        elif self.current_filter == "available":
+            filtered = [p for p in filtered if not PluginInstaller.is_installed(p['name'])]
         
-        text_frame = ctk.CTkFrame(info_frame, fg_color="transparent")
-        text_frame.pack(side="left")
+        self.filtered_plugins = filtered
+        self.render_plugins()
+    
+    def set_filter(self, filter_key):
+        """Set active filter"""
+        self.current_filter = filter_key
         
-        name = plugin_data['name'].replace('.py', '').capitalize()
-        ctk.CTkLabel(text_frame, text=name, font=("Roboto", 16, "bold"), text_color=COLORS["text_main"]).pack(anchor="w")
-        ctk.CTkLabel(text_frame, text=f"{plugin_data['size']} bytes", font=("Roboto", 11), text_color=COLORS["text_dim"]).pack(anchor="w")
+        # Update button colors
+        for key, btn in self.filter_btns.items():
+            if key == filter_key:
+                btn.configure(fg_color=COLORS["accent"])
+            else:
+                btn.configure(fg_color=COLORS["card_bg"])
         
-        # Action Button
-        btn_text = get_text('ui.store.installed') if is_installed else get_text('ui.store.install')
-        btn_color = COLORS["success"] if is_installed else COLORS["accent"]
-        btn_state = "disabled" if is_installed else "normal"
+        self.apply_filters()
+    
+    def render_plugins(self):
+        """Render filtered plugins"""
+        # Clear existing
+        for widget in self.scroll_frame.winfo_children():
+            widget.destroy()
         
-        # Se installato, permetti aggiornamento (opzionale, per ora disabilitato se installato)
-        if is_installed:
-             btn_text = get_text('ui.store.reinstall')
-             btn_color = COLORS["warning"]
-             btn_state = "normal"
+        if not self.filtered_plugins:
+            ctk.CTkLabel(
+                self.scroll_frame,
+                text=get_text('ui.store.empty'),
+                font=("Roboto", 16),
+                text_color=COLORS["text_dim"]
+            ).pack(pady=50)
+            return
         
-        btn = ctk.CTkButton(
-            row,
-            text=btn_text,
-            font=("Roboto", 12, "bold"),
-            fg_color=btn_color,
-            width=100,
-            height=35,
-            state=btn_state
+        from utils.plugin_installer import PluginInstaller
+        
+        for plugin in self.filtered_plugins:
+            self.create_plugin_card(plugin, PluginInstaller.is_installed(plugin['name']))
+    
+    def create_plugin_card(self, plugin_data, is_installed):
+        """Create enhanced plugin card"""
+        card = ctk.CTkFrame(
+            self.scroll_frame,
+            fg_color=COLORS["card_bg"],
+            corner_radius=12,
+            border_width=1,
+            border_color=COLORS["border"]
         )
-        btn.configure(command=lambda b=btn, p=plugin_data: self.install_action(b, p))
-        btn.pack(side="right", padx=15)
-
-    def install_action(self, btn, plugin_data):
-        btn.configure(state="disabled", text=get_text('ui.store.downloading'))
-        threading.Thread(target=self._run_install, args=(btn, plugin_data), daemon=True).start()
+        card.pack(fill="x", pady=6)
+        card.grid_columnconfigure(0, weight=1)
         
-    def _run_install(self, btn, plugin_data):
-        from utils.plugin_installer import PluginInstaller
-        success = PluginInstaller.install_plugin(plugin_data)
-        self.after(0, lambda: self._post_install(btn, success))
+        # Top row: Icon, Name, Status
+        top_row = ctk.CTkFrame(card, fg_color="transparent")
+        top_row.grid(row=0, column=0, sticky="ew", padx=15, pady=(15, 5))
         
-    def _post_install(self, btn, success):
-        if success:
-            btn.configure(text=get_text('ui.store.success'), fg_color=COLORS["success"])
+        # Icon
+        ctk.CTkLabel(
+            top_row,
+            text="🔌",
+            font=("Segoe UI Emoji", 28)
+        ).pack(side="left", padx=(0, 12))
+        
+        # Name & Metadata
+        info_frame = ctk.CTkFrame(top_row, fg_color="transparent")
+        info_frame.pack(side="left", fill="x", expand=True)
+        
+        name_label = ctk.CTkLabel(
+            info_frame,
+            text=plugin_data['display_name'],
+            font=("Roboto", 17, "bold"),
+            text_color=COLORS["text_main"]
+        )
+        name_label.pack(anchor="w")
+        
+        # Metadata row
+        meta_frame = ctk.CTkFrame(info_frame, fg_color="transparent")
+        meta_frame.pack(anchor="w")
+        
+        metadata = []
+        if plugin_data.get('author') and plugin_data['author'] != 'Unknown':
+            metadata.append(f"👤 {plugin_data['author']}")
+        if plugin_data.get('version'):
+            metadata.append(f"📌 v{plugin_data['version']}")
+        metadata.append(f"💾 {plugin_data['size']} bytes")
+        
+        ctk.CTkLabel(
+            meta_frame,
+            text=" • ".join(metadata),
+            font=("Roboto", 11),
+            text_color=COLORS["text_dim"]
+        ).pack(side="left")
+        
+        # Status Badge
+        if is_installed:
+            badge = ctk.CTkLabel(
+                top_row,
+                text=get_text('ui.store.installed'),
+                font=("Roboto", 11, "bold"),
+                text_color=COLORS["success"],
+                fg_color=COLORS["bg_dark"],
+                corner_radius=6,
+                padx=12,
+                pady=4
+            )
+            badge.pack(side="right", padx=(10, 0))
+        
+        # Description
+        if plugin_data.get('description'):
+            desc = plugin_data['description']
+            if len(desc) > 120:
+                desc = desc[:117] + "..."
+            
+            ctk.CTkLabel(
+                card,
+                text=desc,
+                font=("Roboto", 12),
+                text_color=COLORS["text_dim"],
+                wraplength=750,
+                justify="left"
+            ).grid(row=1, column=0, sticky="w", padx=15, pady=(0, 10))
+        
+        # Tags
+        if plugin_data.get('tags'):
+            tag_frame = ctk.CTkFrame(card, fg_color="transparent")
+            tag_frame.grid(row=2, column=0, sticky="w", padx=15, pady=(0, 10))
+            
+            for tag in plugin_data['tags'][:4]:  # Max 4 tags
+                tag_label = ctk.CTkLabel(
+                    tag_frame,
+                    text=f"#{tag}",
+                    font=("Roboto", 10),
+                    text_color=COLORS["accent"],
+                    fg_color=COLORS["bg_dark"],
+                    corner_radius=4,
+                    padx=8,
+                    pady=2
+                )
+                tag_label.pack(side="left", padx=(0, 5))
+        
+        # Action Buttons
+        action_frame = ctk.CTkFrame(card, fg_color="transparent")
+        action_frame.grid(row=3, column=0, sticky="ew", padx=15, pady=(0, 15))
+        
+        if is_installed:
+            # Update button
+            update_btn = ctk.CTkButton(
+                action_frame,
+                text=get_text('ui.store.update'),
+                font=("Roboto", 12, "bold"),
+                fg_color=COLORS["warning"],
+                hover_color="#d89c4a",
+                width=120,
+                height=36,
+                command=lambda p=plugin_data: self.update_action(p)
+            )
+            update_btn.pack(side="right", padx=(5, 0))
+            
+            # Uninstall button
+            uninstall_btn = ctk.CTkButton(
+                action_frame,
+                text=get_text('ui.store.uninstall'),
+                font=("Roboto", 12, "bold"),
+                fg_color=COLORS["error"],
+                hover_color="#d85a5a",
+                width=120,
+                height=36,
+                command=lambda p=plugin_data: self.uninstall_action(p)
+            )
+            uninstall_btn.pack(side="right")
         else:
-            btn.configure(text=get_text('ui.store.error'), fg_color=COLORS["error"], state="normal")
+            # Install button
+            install_btn = ctk.CTkButton(
+                action_frame,
+                text=get_text('ui.store.install'),
+                font=("Roboto", 12, "bold"),
+                fg_color=COLORS["accent"],
+                hover_color="#5a82d8",
+                width=120,
+                height=36,
+                command=lambda p=plugin_data: self.install_action(p)
+            )
+            install_btn.pack(side="right")
+    
+    def install_action(self, plugin_data):
+        """Install plugin"""
+        self.perform_action(plugin_data, "install")
+    
+    def update_action(self, plugin_data):
+        """Update plugin"""
+        self.perform_action(plugin_data, "update")
+    
+    def uninstall_action(self, plugin_data):
+        """Uninstall plugin"""
+        self.perform_action(plugin_data, "uninstall")
+    
+    def perform_action(self, plugin_data, action_type):
+        """Perform plugin action in background"""
+        threading.Thread(
+            target=self._run_action,
+            args=(plugin_data, action_type),
+            daemon=True
+        ).start()
+    
+    def _run_action(self, plugin_data, action_type):
+        """Run plugin action"""
+        from utils.plugin_installer import PluginInstaller
+        
+        try:
+            if action_type == "install" or action_type == "update":
+                success = PluginInstaller.install_plugin(plugin_data)
+                msg_key = 'ui.store.success_install' if action_type == "install" else 'ui.store.success_update'
+            else:  # uninstall
+                success = PluginInstaller.uninstall_plugin(plugin_data['name'])
+                msg_key = 'ui.store.success_uninstall'
+            
+            if success:
+                plugin_name = plugin_data['display_name']
+                self.after(0, lambda: self.show_success(get_text(msg_key).format(plugin=plugin_name)))
+                self.after(100, self.apply_filters)  # Refresh list
+            else:
+                self.after(0, lambda: self.show_error_msg("Installation failed"))
+                
+        except Exception as e:
+            self.after(0, lambda: self.show_error_msg(str(e)))
+    
+    def show_success(self, message):
+        """Show success notification"""
+        # Create temporary label at top
+        notif = ctk.CTkLabel(
+            self,
+            text=message,
+            font=("Roboto", 13, "bold"),
+            text_color=COLORS["success"],
+            fg_color=COLORS["card_bg"],
+            corner_radius=8,
+            padx=20,
+            pady=10
+        )
+        notif.place(relx=0.5, y=90, anchor="center")
+        
+        # Auto-hide after 3 seconds
+        self.after(3000, notif.destroy)
+    
+    def show_error_msg(self, error):
+        """Show error notification"""
+        notif = ctk.CTkLabel(
+            self,
+            text=get_text('ui.store.error').format(error=error),
+            font=("Roboto", 13, "bold"),
+            text_color=COLORS["error"],
+            fg_color=COLORS["card_bg"],
+            corner_radius=8,
+            padx=20,
+            pady=10
+        )
+        notif.place(relx=0.5, y=90, anchor="center")
+        self.after(4000, notif.destroy)
 
 def run_ui(bot_queue, stop_event):
     from utils.config_validator import ConfigValidator
