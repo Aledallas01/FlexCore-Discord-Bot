@@ -34,7 +34,7 @@ class PluginInstaller:
         """
         try:
             # Fetch plugins directory
-            response = requests.get(PluginInstaller.REPO_API_URL, timeout=10)
+            response = requests.get(PluginInstaller.REPO_API_URL2, timeout=10)
             response.raise_for_status()
             data = response.json()
             
