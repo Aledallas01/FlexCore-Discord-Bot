@@ -55,7 +55,7 @@ class DiscordBot:
         self.bot = commands.Bot(
             command_prefix=self._dynamic_prefix,  # Prefix dinamico
             intents=intents,
-            help_command=commands.DefaultHelpCommand(),
+            help_command=None,  # Disabled - using custom help in admin plugin
             case_insensitive=True,  # Comandi case-insensitive
             strip_after_prefix=True,
             owner_id=self._get_owner_id()
