@@ -1,87 +1,87 @@
-# 🔄 Sistema Auto-Update
+# 🔄 Auto-Update System
 
-Il bot include un sistema di auto-aggiornamento intelligente che sincronizza automaticamente con la repository GitHub.
+The bot includes an intelligent auto-update system that automatically synchronizes with the GitHub repository.
 
-## Come Abilitarlo
+## How to Enable
 
-Aggiungi al tuo `config/config.json`:
+Add to your `config/config.json`:
 
 ```json
 {
   "token": "YOUR_BOT_TOKEN",
   "prefix": "!",
   "owner_id": "YOUR_DISCORD_ID",
-  "startscreen_type": "ui",
+  "startscreen_type": "TEXT or UI",
   "auto_update": true
 }
 ```
 
-## Comportamento
+## Behavior
 
-### Quando si Aggiorna
-- **All'avvio del bot**: Se `auto_update: true`, controlla aggiornamenti prima di inizializzare
+### When It Updates
+- **On bot startup**: If `auto_update: true`, checks for updates before initialization
 
-### Cosa Aggiorna
+### What Gets Updated
 
-#### ✅ File Aggiornati Automaticamente
-- **File `.py`** (Python): Sovrascritti completamente con la versione GitHub
-- **File `.json` NON protetti**: Merge intelligente (nuovi campi aggiunti, valori esistenti mantenuti)
-- **Nuovi file**: Scaricati se non presenti
+#### ✅ Automatically Updated Files
+- **`.py` files** (Python): Completely overwritten with GitHub version
+- **`.json` files NOT protected**: Smart merge (new fields added, existing values kept)
+- **New files**: Downloaded if not present
 
-#### 🛡️ File **MAI**Toccati (Protetti)
-- `config/config.json` - La tua configurazione personale
-- `data/` - Database e dati utente
-- `logs/` - File di log
-- `.env` - Variabili d'ambiente
+#### 🛡️ Files **NEVER** Touched (Protected)
+- `config/config.json` - Your personal configuration
+- `data/` - Database and user data
+- `logs/` - Log files
+- `.env` - Environment variables
 - `.venv/` - Virtual environment
-- `.git/` - Repository git locale
+- `.git/` - Local git repository
 
 ### Smart JSON Merge
 
-Per file come `config/moderation.json`:
-- **Nuovi campi** dalla repository → Aggiunti automaticamente
-- **Campi esistenti** locali → Mantenuti con i tuoi valori
-- **Campi rimossi** dalla repository → Mantenuti localmente (non cancellati)
+For files like `config/moderation.json`:
+- **New fields** from repository → Added automatically
+- **Existing local fields** → Kept with your values
+- **Fields removed** from repository → Kept locally (not deleted)
 
-**Esempio:**
+**Example:**
 ```json
-// GitHub aggiunge nuovo campo "backup_enabled"
-// TUO FILE LOCALE:
+// GitHub adds new field "backup_enabled"
+// YOUR LOCAL FILE:
 {
   "staff_roles": ["123456"],
   "log_channel_id": "789012"
 }
 
-// DOPO L'UPDATE:
+// AFTER UPDATE:
 {
-  "staff_roles": ["123456"],      // ✅ Mantenuto
-  "log_channel_id": "789012",     // ✅ Mantenuto
-  "backup_enabled": true           // ✅ Aggiunto automaticamente
+  "staff_roles": ["123456"],      // ✅ Kept
+  "log_channel_id": "789012",     // ✅ Kept
+  "backup_enabled": true           // ✅ Added automatically
 }
 ```
 
-## Sicurezza
+## Security
 
 - Repository hardcoded: `Aledallas01/FlexCore-Discord-Bot`
 - Branch hardcoded: `main`
-- **NON modificabili** dall'utente per sicurezza
+- **NOT modifiable** by user for security
 
 ## Backup
 
-Prima di ogni aggiornamento, i file modificati vengono backuppati in `.update_backups/`
+Before each update, modified files are backed up in `.update_backups/`
 
-## Disabilitare
+## Disable
 
-Rimuovi o imposta `"auto_update": false` in `config.json`
+Set `"auto_update": false` in `config.json`
 
-## Problemi
+## Issues
 
-Se l'auto-update fallisce:
-- Il bot continua normalmente
-- Messaggio di errore visualizzato in console
-- Controlla connessione internet
-- Verifica permessi file
+If auto-update fails:
+- Bot continues normally
+- Error message displayed in console
+- Check internet connection
+- Verify file permissions
 
-## File Tracciamento
+## Tracking File
 
-- `.last_update_check` - Salva ultimo commit GitHub per confronto
+- `.last_update_check` - Saves last GitHub commit for comparison

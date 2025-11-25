@@ -1,63 +1,63 @@
 # FlexCore Plugin Development Guide
 
-Guida completa alla creazione di plugin per FlexCore Discord Bot.
+Complete guide to creating plugins for FlexCore Discord Bot.
 
 ---
 
-## 📋 Struttura di un Plugin
+## 📋 Plugin Structure
 
-Ogni plugin è un file `.py` nella cartella `plugins/` e deve seguire questa struttura base:
+Each plugin is a `.py` file in the `plugins/` folder and must follow this basic structure:
 
 ```python
 import discord
 from discord.ext import commands
 from discord import app_commands
 
-class NomePluginCog(commands.Cog):
+class PluginNameCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        # Inizializzazione qui
+        # Initialize here
     
 async def setup(bot):
-    await bot.add_cog(NomePluginCog(bot))
+    await bot.add_cog(PluginNameCog(bot))
 ```
 
-### Convenzione dei Nomi
-- **File**: `nome_plugin.py` (snake_case)
-- **Classe**: `NomePluginCog` (PascalCase + suffisso "Cog")
-- Esempio: `example.py` → `ExampleCog`
+### Naming Convention
+- **File**: `plugin_name.py` (snake_case)
+- **Class**: `PluginNameCog` (PascalCase + "Cog" suffix)
+- Example: `example.py` → `ExampleCog`
 
 ---
 
-## ⚙️ Sistema di Configurazione (Auto-Create & Validate)
+## ⚙️ Configuration System (Auto-Create & Validate)
 
-### Struttura Raccomandata
+### Recommended Structure
 
 ```python
 import json
 import os
 
-class MioPluginCog(commands.Cog):
+class MyPluginCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.config_path = os.path.join("config", "mio_plugin.json")
+        self.config_path = os.path.join("config", "my_plugin.json")
         
-        # Configurazione di default
+        # Default configuration
         self.default_config = {
             "enabled": True,
             "admin_role_id": 0,
             "message": "Hello World"
         }
         
-        # Carica e valida
+        # Load and validate
         self.config = self._load_and_validate_config()
     
     def _load_and_validate_config(self):
-        """Auto-crea, carica e ripara la configurazione"""
+        """Auto-create, load and repair configuration"""
         
         # 1. Auto-Create
         if not os.path.exists(self.config_path):
-            print(f"⚙️ [MioPlugin] Creazione config in {self.config_path}")
+            print(f"⚙️ [MyPlugin] Creating config at {self.config_path}")
             os.makedirs(os.path.dirname(self.config_path), exist_ok=True)
             self._save_config(self.default_config)
             return self.default_config
@@ -67,16 +67,16 @@ class MioPluginCog(commands.Cog):
             with open(self.config_path, 'r') as f:
                 config = json.load(f)
         except Exception as e:
-            print(f"❌ [MioPlugin] Errore caricamento config: {e}")
+            print(f"❌ [MyPlugin] Error loading config: {e}")
             return self.default_config
         
         # 3. Validate & Repair
         valid = True
         
-        # Check chiavi mancanti
+        # Check missing keys
         for key, default_val in self.default_config.items():
             if key not in config:
-                print(f"⚠️ [MioPlugin] Chiave '{key}' mancante, aggiunta.")
+                print(f"⚠️ [MyPlugin] Missing key '{key}', added.")
                 config[key] = default_val
                 valid = False
         
@@ -85,17 +85,17 @@ class MioPluginCog(commands.Cog):
             config["enabled"] = True
             valid = False
         
-        # Salva se modificato
+        # Save if modified
         if not valid:
-            print(f"🔧 [MioPlugin] Config riparata.")
+            print(f"🔧 [MyPlugin] Config repaired.")
             self._save_config(config)
         else:
-            print(f"✅ [MioPlugin] Config caricata.")
+            print(f"✅ [MyPlugin] Config loaded.")
         
         return config
     
     def _save_config(self, config):
-        """Salva la configurazione"""
+        """Save configuration"""
         with open(self.config_path, 'w') as f:
             json.dump(config, f, indent=4)
 ```
@@ -104,167 +104,167 @@ class MioPluginCog(commands.Cog):
 
 ## 📝 Text Commands (Prefix Commands)
 
-I text commands usano il prefix del bot (es. `!comando`).
+Text commands use the bot's prefix (e.g., `!command`).
 
-### Comando Base
+### Basic Command
 
 ```python
 @commands.command(name="ping")
 async def ping_command(self, ctx):
-    """Risponde con Pong!"""
+    """Responds with Pong!"""
     await ctx.send("🏓 Pong!")
 ```
 
-### Con Argomenti
+### With Arguments
 
 ```python
 @commands.command(name="say")
 async def say_command(self, ctx, *, message: str):
-    """Ripete un messaggio
+    """Repeats a message
     
     Args:
-        ctx: Contesto del comando
-        message: Il messaggio da ripetere
+        ctx: Command context
+        message: The message to repeat
     """
     await ctx.send(message)
 ```
 
-### Con Permessi
+### With Permissions
 
 ```python
 @commands.command(name="kick")
 @commands.has_permissions(kick_members=True)
 async def kick_command(self, ctx, member: discord.Member, *, reason: str = None):
-    """Espelle un membro (richiede permessi)"""
+    """Kicks a member (requires permissions)"""
     await member.kick(reason=reason)
-    await ctx.send(f"✅ {member.mention} è stato espulso!")
+    await ctx.send(f"✅ {member.mention} has been kicked!")
 ```
 
-### Error Handling per Text Commands
+### Error Handling for Text Commands
 
 ```python
 @kick_command.error
 async def kick_error(self, ctx, error):
     if isinstance(error, commands.MissingPermissions):
-        await ctx.send("❌ Non hai i permessi necessari!")
+        await ctx.send("❌ You don't have the necessary permissions!")
     elif isinstance(error, commands.MemberNotFound):
-        await ctx.send("❌ Membro non trovato!")
+        await ctx.send("❌ Member not found!")
 ```
 
 ---
 
 ## ⚡ Slash Commands (Application Commands)
 
-Gli slash commands sono i moderni comandi di Discord (`/comando`).
+Slash commands are Discord's modern commands (`/command`).
 
-### Comando Base
+### Basic Command
 
 ```python
-@app_commands.command(name="hello", description="Saluta l'utente")
+@app_commands.command(name="hello", description="Greets the user")
 async def hello_slash(self, interaction: discord.Interaction):
-    """Comando slash base"""
-    await interaction.response.send_message(f"👋 Ciao {interaction.user.mention}!")
+    """Basic slash command"""
+    await interaction.response.send_message(f"👋 Hello {interaction.user.mention}!")
 ```
 
-### Con Parametri
+### With Parameters
 
 ```python
-@app_commands.command(name="userinfo", description="Mostra info su un utente")
-@app_commands.describe(user="L'utente di cui vedere le info")
+@app_commands.command(name="userinfo", description="Show user information")
+@app_commands.describe(user="The user to get info about")
 async def userinfo_slash(self, interaction: discord.Interaction, user: discord.Member):
-    """Slash command con parametro"""
-    embed = discord.Embed(title=f"Info su {user.name}", color=discord.Color.blue())
+    """Slash command with parameter"""
+    embed = discord.Embed(title=f"Info about {user.name}", color=discord.Color.blue())
     embed.add_field(name="ID", value=user.id)
-    embed.add_field(name="Creato il", value=user.created_at.strftime("%d/%m/%Y"))
+    embed.add_field(name="Created on", value=user.created_at.strftime("%m/%d/%Y"))
     await interaction.response.send_message(embed=embed)
 ```
 
-### Con Choices (Dropdown)
+### With Choices (Dropdown)
 
 ```python
-@app_commands.command(name="color", description="Scegli un colore")
-@app_commands.describe(color="Il colore preferito")
+@app_commands.command(name="color", description="Choose a color")
+@app_commands.describe(color="Your favorite color")
 @app_commands.choices(color=[
-    app_commands.Choice(name="Rosso", value="red"),
-    app_commands.Choice(name="Verde", value="green"),
-    app_commands.Choice(name="Blu", value="blue")
+    app_commands.Choice(name="Red", value="red"),
+    app_commands.Choice(name="Green", value="green"),
+    app_commands.Choice(name="Blue", value="blue")
 ])
 async def color_slash(self, interaction: discord.Interaction, color: app_commands.Choice[str]):
-    """Slash command con choices"""
-    await interaction.response.send_message(f"Hai scelto: {color.name} ({color.value})")
+    """Slash command with choices"""
+    await interaction.response.send_message(f"You chose: {color.name} ({color.value})")
 ```
 
-### Con Permessi
+### With Permissions
 
 ```python
-@app_commands.command(name="ban", description="Banna un utente")
+@app_commands.command(name="ban", description="Ban a user")
 @app_commands.default_permissions(ban_members=True)
-@app_commands.describe(user="Utente da bannare", reason="Motivo del ban")
+@app_commands.describe(user="User to ban", reason="Ban reason")
 async def ban_slash(self, interaction: discord.Interaction, user: discord.Member, reason: str = None):
-    """Slash command con permessi"""
+    """Slash command with permissions"""
     await user.ban(reason=reason)
-    await interaction.response.send_message(f"🔨 {user.mention} è stato bannato!")
+    await interaction.response.send_message(f"🔨 {user.mention} has been banned!")
 ```
 
-### Risposte Ephemeral (Solo Visibili all'Utente)
+### Ephemeral Responses (Only Visible to User)
 
 ```python
-@app_commands.command(name="secret", description="Messaggio segreto")
+@app_commands.command(name="secret", description="Secret message")
 async def secret_slash(self, interaction: discord.Interaction):
-    """Risposta visibile solo all'utente"""
-    await interaction.response.send_message("🤫 Questo messaggio è solo per te!", ephemeral=True)
+    """Response visible only to user"""
+    await interaction.response.send_message("🤫 This message is only for you!", ephemeral=True)
 ```
 
 ---
 
 ## 🎯 Event Listeners
 
-Gli eventi permettono al plugin di reagire a eventi Discord.
+Events allow plugins to react to Discord events.
 
-### Evento: Membro Entra
+### Event: Member Join
 
 ```python
 @commands.Cog.listener()
 async def on_member_join(self, member: discord.Member):
-    """Si attiva quando un membro entra nel server"""
+    """Triggered when a member joins the server"""
     channel = member.guild.system_channel
     if channel:
-        await channel.send(f"👋 Benvenuto {member.mention}!")
+        await channel.send(f"👋 Welcome {member.mention}!")
 ```
 
-### Evento: Messaggio Inviato
+### Event: Message Sent
 
 ```python
 @commands.Cog.listener()
 async def on_message(self, message: discord.Message):
-    """Si attiva per ogni messaggio"""
-    # Ignora bot
+    """Triggered for every message"""
+    # Ignore bots
     if message.author.bot:
         return
     
-    # Esempio: risponde a "ciao"
-    if "ciao" in message.content.lower():
-        await message.channel.send(f"Ciao {message.author.mention}!")
+    # Example: responds to "hello"
+    if "hello" in message.content.lower():
+        await message.channel.send(f"Hello {message.author.mention}!")
 ```
 
-### Evento: Reazione Aggiunta
+### Event: Reaction Added
 
 ```python
 @commands.Cog.listener()
 async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User):
-    """Si attiva quando viene aggiunta una reazione"""
+    """Triggered when a reaction is added"""
     if user.bot:
         return
     
     if str(reaction.emoji) == "👍":
-        await reaction.message.channel.send(f"{user.mention} ha messo like!")
+        await reaction.message.channel.send(f"{user.mention} liked this!")
 ```
 
 ---
 
-## 🗄️ Database Integration (Opzionale)
+## 🗄️ Database Integration (Optional)
 
-### Esempio con SQLite
+### SQLite Example
 
 ```python
 import sqlite3
@@ -272,11 +272,11 @@ import sqlite3
 class DatabasePluginCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.db_path = "data/mio_plugin.db"
+        self.db_path = "data/my_plugin.db"
         self._init_database()
     
     def _init_database(self):
-        """Inizializza il database"""
+        """Initialize database"""
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
@@ -292,7 +292,7 @@ class DatabasePluginCog(commands.Cog):
         conn.close()
     
     def add_points(self, user_id: int, points: int):
-        """Aggiunge punti a un utente"""
+        """Add points to a user"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
@@ -309,92 +309,92 @@ class DatabasePluginCog(commands.Cog):
 
 ## ✅ Best Practices
 
-### 1. Gestione Errori
-Gestisci sempre le eccezioni per evitare crash:
+### 1. Error Handling
+Always handle exceptions to avoid crashes:
 
 ```python
 @commands.command()
 async def risky_command(self, ctx):
     try:
-        # Operazione rischiosa
+        # Risky operation
         result = await some_api_call()
-        await ctx.send(f"Risultato: {result}")
+        await ctx.send(f"Result: {result}")
     except Exception as e:
-        print(f"Errore: {e}")
-        await ctx.send("❌ Si è verificato un errore!")
+        print(f"Error: {e}")
+        await ctx.send("❌ An error occurred!")
 ```
 
 ### 2. Logging
-Usa print o logging per debug:
+Use print or logging for debugging:
 
 ```python
-print(f"[MioPlugin] Comando eseguito da {ctx.author}")
+print(f"[MyPlugin] Command executed by {ctx.author}")
 ```
 
-### 3. Configurazione Modulare
-Separa le impostazioni dal code logic usando i config file JSON.
+### 3. Modular Configuration
+Separate settings from code logic using JSON config files.
 
-### 4. Documentazione
-Documenta i comandi con docstring:
+### 4. Documentation
+Document commands with docstrings:
 
 ```python
 @commands.command()
 async def help_me(self, ctx):
-    """Mostra l'aiuto del plugin
+    """Shows plugin help
     
-    Questo comando fornisce informazioni utili
-    su come usare il plugin.
+    This command provides useful information
+    on how to use the plugin.
     """
-    await ctx.send("📖 Ecco l'aiuto...")
+    await ctx.send("📖 Here's the help...")
 ```
 
-### 5. Permessi
-Controlla sempre i permessi prima di azioni sensibili:
+### 5. Permissions
+Always check permissions before sensitive actions:
 
 ```python
 if not ctx.author.guild_permissions.administrator:
-    await ctx.send("❌ Solo gli admin possono usare questo comando!")
+    await ctx.send("❌ Only admins can use this command!")
     return
 ```
 
 ---
 
-## 📦 Esempio Completo
+## 📦 Complete Example
 
-Vedi `plugins/example.py` per un esempio funzionante che include:
-- ✅ Sistema di configurazione auto-create/validate
+See `plugins/example.py` for a working example that includes:
+- ✅ Auto-create/validate configuration system
 - ✅ Text commands
 - ✅ Slash commands
 - ✅ Event listeners
 - ✅ Error handling
-- ✅ Documentazione completa
+- ✅ Complete documentation
 
 ---
 
-## 🚀 Testing del Plugin
+## 🚀 Testing the Plugin
 
-1. Salva il file in `plugins/`
-2. Riavvia il bot o usa il comando reload (se implementato)
-3. Verifica che il plugin sia caricato nel log
-4. Testa i comandi nel server Discord
+1. Save the file in `plugins/`
+2. Restart the bot or use reload command (if implemented)
+3. Check that the plugin is loaded in the log
+4. Test commands in Discord server
 
 ---
 
 ## 🔧 Troubleshooting
 
-### Plugin non si carica
-- Controlla che il nome della classe finisca con "Cog"
-- Verifica che `async def setup(bot)` sia presente
-- Controlla errori di sintassi nel log
+### Plugin won't load
+- Check that class name ends with "Cog"
+- Verify that `async def setup(bot)` is present
+- Check for syntax errors in the log
 
-### Slash commands non compaiono
-- I slash commands devono essere sincronizzati: `/sync` (se hai il comando)
-- Potrebbero volerci alcuni minuti prima che appaiano
+### Slash commands don't appear
+- Slash commands must be synced: `/sync` (if you have the command)
+- May take a few minutes to appear
 
-### Config non si crea
-- Verifica che la cartella `config/` esista
-- Controlla i permessi di scrittura del file system
+### Config won't create
+- Verify that `config/` folder exists
+- Check file system write permissions
 
 ---
 
-**Buon Coding! 🎉**
+**Happy Coding! 🎉**

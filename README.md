@@ -1,149 +1,126 @@
-# Discord Bot con Sistema Plugin
+# Discord Bot with Plugin System
 
-Bot Discord modulare in Python con sistema di caricamento dinamico dei plugin, supporto dual-command (text + slash) e **Dashboard UI**.
+Modular Discord bot in Python with dynamic plugin loading system, dual-command support (text + slash) and **Dashboard UI**.
 
-## 🚀 Caratteristiche
+## 🚀 Features
 
-- **Sistema Plugin Modulare**: Architettura separata con `bot.py` (core) e `loader.py` (gestione plugin)
-- **Dashboard UI**: Interfaccia grafica moderna con statistiche in tempo reale (CPU, RAM, Ping) e log colorati
-- **Logging Avanzato**: Log su file (`logs/moderation.log`) e embed estetici con avatar e footer
-- **Auto-Discovery**: Scansione automatica della cartella `plugins/` e registrazione in `plugins.json`
-- **Dual Commands**: Supporto sia per comandi text (`!comando`) che slash (`/comando`)
-- **Configurazione Dinamica**: Nuovi plugin aggiunti automaticamente con `true` di default
-- **Configurazione Semplice**: File JSON per gestire token e abilitazione plugin (valori numerici come stringhe)
-- **Plugin Inclusi**:
-  - 🎫 **Tickets**: Sistema di supporto con ticket
-  - 🛡️ **Moderation**: Comandi di moderazione (kick, ban, timeout, clear)
-  - 🎮 **Funny**: Comandi divertenti e giochi
+- **Modular Plugin System**: Separated architecture with `bot.py` (core) and `loader.py` (plugin management)
+- **Dashboard UI**: Modern graphical interface with real-time statistics (CPU, RAM, Ping) and colored logs
+- **Advanced Logging**: File logging (`logs/moderation.log`) and aesthetic embeds with avatar and footer
+- **Auto-Discovery**: Automatic scanning of `plugins/` folder and registration in `plugins.json`
+- **Dual Commands**: Support for both text commands (`!command`) and slash commands (`/command`)
+- **Dynamic Configuration**: New plugins added automatically with `true` by default
+- **Simple Configuration**: JSON files to manage token and plugin enabling (numeric values as strings)
 
-## 📁 Struttura del Progetto
+## 📁 Project Structure
 
 ```
 DiscordBot/
-├── bot.py                 # Core del bot (inizializzazione, eventi)
-├── loader.py              # Sistema auto-discovery e caricamento plugin
-├── ui/                    # Interfaccia Grafica
+├── bot.py                 # Bot core (initialization, events)
+├── loader.py              # Auto-discovery and plugin loading system
+├── ui/                    # Graphical Interface
 │   └── startscreen.py    # Dashboard UI
-├── config/                # Configurazioni
-│   ├── config.json       # Configurazione bot
-│   ├── moderation.json   # Configurazione moderazione
-│   └── plugins.json      # Abilitazione plugin (auto-generato)
-├── plugins/              # Plugin
+├── config/                # Configurations
+│   ├── config.json       # Bot configuration
+│   ├── moderation.json   # Moderation configuration
+│   └── plugins.json      # Plugin enabling (auto-generated)
+├── plugins/              # Plugins
 │   ├── __init__.py
-│   ├── tickets.py        # Plugin ticket
-│   ├── moderation.py     # Plugin moderazione
-│   └── funny.py          # Plugin divertenti
-├── logs/                 # File di log
-├── data/                 # Database SQLite
-├── requirements.txt      # Dipendenze
-└── README.md            # Questo file
+│   └── moderation.py     # Moderation plugin
+├── logs/                 # Log files
+├── data/                 # SQLite databases
+├── requirements.txt      # Dependencies
+└── README.md            # This file
 ```
 
-## 🔧 Installazione
+## 🔧 Installation
 
-1. **Clona o scarica il repository**
+1. **Clone or download the repository**
 
-2. **Installa le dipendenze**:
+2. **Install dependencies**:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. **Configura il bot**:
-   - Apri `config/config.json`
-   - Inserisci il tuo token Discord
-   - (Opzionale) Modifica il prefix e altri parametri
+3. **Configure the bot**:
+   - Open `config/config.json`
+   - Insert your Discord token
+   - (Optional) Modify prefix and other parameters
 
-4. **Configura i plugin**:
-   - Apri `config/plugins.json`
-   - Imposta `true` per i plugin da caricare, `false` per quelli da disabilitare
+4. **Configure plugins**:
+   - Open `config/plugins.json`
+   - Set `true` for plugins to load, `false` to disable
 
-## ▶️ Avvio
+## ▶️ Startup
 
 ```bash
 python bot.py
 ```
-Si aprirà automaticamente la **Dashboard UI** per monitorare il bot.
+The **Dashboard UI** will automatically open to monitor the bot.
 
-## 🎮 Comandi
+## 🎮 Commands
 
-> **Nota**: Tutti i comandi sono disponibili sia come comandi text (con prefix `!`) che come slash commands (con `/`)
+> **Note**: All commands are available both as text commands (with prefix) and slash commands (with `/`)
 
-### Plugin Tickets (🎫)
-| Text Command | Slash Command | Descrizione | Permessi |
-|--------------|---------------|-------------|----------|
-| `!ticket` | `/ticket` | Crea un nuovo ticket di supporto | Tutti |
-| `!closeticket` | `/closeticket` | Chiude il ticket corrente | Manage Channels |
-| `!ticketstats` | `/ticketstats` | Mostra statistiche sui ticket | Manage Guild |
+### Moderation Plugin (🛡️)
+| Text Command | Slash Command | Description | Permissions |
+|--------------|---------------|-------------|------------|
+| `!kick @user [reason]` | `/kick @user [reason]` | Kick a member | Kick Members |
+| `!ban @user [duration] [reason]` | `/ban @user [duration] [reason]` | Ban a member (e.g.: `!ban @User 1h Spam`) | Ban Members |
+| `!unban <user_id>` | `/unban <user_id>` | Unban a user | Ban Members |
+| `!mute @user [duration] [reason]` | `/mute @user [duration] [reason]` | Mute a user (e.g.: `!mute @User 30m`) | Manage Roles |
+| `!unmute @user` | `/unmute @user` | Remove mute | Manage Roles |
+| `!warn @user [reason]` | `/warn @user [reason]` | Warn a user | Manage Roles |
+| `!unwarn @user [id]` | `/unwarn @user [id]` | Remove a warning | Manage Roles |
 
-### Plugin Moderation (🛡️)
-> **Nota**: Il plugin moderation è **disabilitato di default**. Abilitalo in `config/plugins.json`
 
-- `!kick @utente [motivo]` - Espelle un membro
-- `!ban @utente [durata] [motivo]` - Banna un membro (es: `!ban @User 1h Spam`)
-- `!unban <user_id>` - Sbanna un utente
-- `!mute @utente [durata] [motivo]` - Silenzia un utente (es: `!mute @User 30m`)
-- `!unmute @utente` - Rimuove il silenziamento
-- `!warn @utente [motivo]` - Avverte un utente
-- `!unwarn @utente [id]` - Rimuove un avvertimento
+## 🔌 Plugin Auto-Discovery
 
-### Plugin Funny (🎮)
-| Text Command | Slash Command | Descrizione |
-|--------------|---------------|-------------|
-| `!8ball <domanda>` | `/8ball <domanda>` | Chiedi alla palla magica |
-| `!dado [facce]` | `/dado [facce]` | Lancia un dado |
-| `!moneta` | `/moneta` | Lancia una moneta |
-| `!complimento [@utente]` | `/complimento [membro]` | Fa un complimento |
-| `!choose opz1, opz2, opz3` | - | Sceglie casualmente |
-| `!meme` | - | Invia un meme casuale |
-| `!indovina` | - | Gioca a indovina il numero |
+The bot automatically scans the `plugins/` folder at startup:
+- **New plugins** are automatically added to `plugins.json` with value `true`
+- **Removed plugins** are deleted from `plugins.json`
+- **Existing plugins** keep their state (enabled/disabled)
 
-## 🔌 Auto-Discovery dei Plugin
+**Example**: Add `plugins/welcome.py` → Restart bot → Plugin is auto-registered and loaded!
 
-Il bot scansiona automaticamente la cartella `plugins/` all'avvio:
-- **Nuovi plugin** vengono aggiunti automaticamente a `plugins.json` con valore `true`
-- **Plugin rimossi** vengono eliminati da `plugins.json`
-- **Plugin esistenti** mantengono il loro stato (enabled/disabled)
+## 🔌 Creating a New Plugin
 
-**Esempio**: Aggiungi `plugins/welcome.py` → Riavvia il bot → Il plugin viene auto-registrato e caricato!
-
-## 🔌 Creare un Nuovo Plugin
-
-1. Crea un nuovo file in `plugins/nome_plugin.py`
-2. Crea una classe che eredita da `commands.Cog`:
+1. Create a new file in `plugins/plugin_name.py`
+2. Create a class that inherits from `commands.Cog`:
 
 ```python
 import discord
 from discord.ext import commands
 from discord import app_commands
 
-class NomePluginCog(commands.Cog):
+class PluginNameCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
     # Text Command
-    @commands.command(name='comando')
-    async def mio_comando(self, ctx, argomento: str = None):
-        await ctx.send(f"Text: Ciao {argomento}!")
+    @commands.command(name='command')
+    async def my_command(self, ctx, argument: str = None):
+        await ctx.send(f"Text: Hello {argument}!")
     
     # Slash Command
-    @app_commands.command(name="comando", description="Descrizione del comando")
-    @app_commands.describe(argomento="Descrizione dell'argomento")
-    async def comando_slash(self, interaction: discord.Interaction, argomento: str = None):
-        await interaction.response.send_message(f"Slash: Ciao {argomento}!")
+    @app_commands.command(name="command", description="Command description")
+    @app_commands.describe(argument="Argument description")
+    async def command_slash(self, interaction: discord.Interaction, argument: str = None):
+        await interaction.response.send_message(f"Slash: Hello {argument}!")
 
 async def setup(bot):
-    await bot.add_cog(NomePluginCog(bot))
+    await bot.add_cog(PluginNameCog(bot))
 ```
 
-3. **Non serve modificare `plugins.json`!** Il loader lo farà automaticamente all'avvio
-4. Riavvia il bot e il plugin verrà caricato automaticamente
+3. **No need to modify `plugins.json`!** The loader will do it automatically on startup
+4. Restart the bot and the plugin will be loaded automatically
 
-## ⚙️ Sincronizzazione Slash Commands
+## ⚙️ Slash Command Sync
 
-Il bot esegue automaticamente una **sincronizzazione globale** all'avvio.
-I comandi slash potrebbero impiegare fino a 1 ora per apparire ovunque, ma di solito sono istantanei se il bot è in pochi server.
+The bot automatically performs a **global sync** on startup.
+Slash commands may take up to 1 hour to appear everywhere, but are usually instant if the bot is in few servers.
 
-## 📝 Configurazione
+## 📝 Configuration
 
 ### config/config.json
 ```json
@@ -151,52 +128,51 @@ I comandi slash potrebbero impiegare fino a 1 ora per apparire ovunque, ma di so
   "token": "YOUR_BOT_TOKEN_HERE",
   "prefix": "!",
   "owner_id": "YOUR_DISCORD_USER_ID",
-  "startscreen_type": "ui"
+  "startscreen_type": "TEXT or UI",
+  "auto_update": true
 }
 ```
 
 ### config/plugins.json
 ```json
 {
-  "tickets": true,
-  "moderation": false,
-  "funny": true
+  "example": false,
+  "moderation": true
 }
 ```
 
-## 🔑 Ottenere un Token Discord
+## 🔑 Getting a Discord Token
 
-1. Vai su [Discord Developer Portal](https://discord.com/developers/applications)
-2. Crea una nuova applicazione
-3. Vai su "Bot" e clicca "Add Bot"
-4. Copia il token e inseriscilo in `config/config.json`
-5. Abilita "Message Content Intent" in Bot → Privileged Gateway Intents
-6. Invita il bot al tuo server usando OAuth2 URL Generator
+1. Visit [Discord Developer Portal](https://discord.com/developers/applications)
+2. Create a new application
+3. Go to "Bot" and click "Add Bot"
+4. Copy the token and paste it in `config/config.json`
+5. Enable "Message Content Intent" in Bot → Privileged Gateway Intents
+6. Invite the bot to your server using OAuth2 URL Generator
 
-## ⚠️ Note Importanti
+## ⚠️ Important Notes
 
-- **Non condividere mai il tuo token!**
-- Aggiungi `config/config.json` al `.gitignore` se usi Git
-- Il bot necessita dei permessi appropriati nel server Discord
-- Per la moderazione, il bot deve avere ruoli superiori agli utenti da moderare
+- **Never share your token!**
+- Bot needs appropriate permissions in Discord server
+- For moderation, bot must have roles higher than users to moderate
 
-## 📦 Dipendenze
+## 📦 Dependencies
 
 - `discord.py` >= 2.3.0
-- `customtkinter` >= 5.2.0 (per la UI)
-- `Pillow` >= 10.0.0 (per immagini UI)
-- `psutil` (per statistiche sistema)
+- `customtkinter` >= 5.2.0 (for UI)
+- `Pillow` >= 10.0.0 (for UI images)
+- `psutil` (for system statistics)
 
 ## 🐛 Troubleshooting
 
-**Il bot non si avvia**: Verifica che il token sia corretto in `config/config.json`
+**Bot won't start**: Verify token is correct in `config/config.json`
 
-**Plugin non caricato**: Controlla che il nome in `plugins.json` corrisponda al nome del file
+**Plugin not loaded**: Check that name in `plugins.json` matches file name
 
-**Comandi non funzionano**: Verifica che il bot abbia i permessi necessari
+**Commands don't work**: Try to restart Discord and Verify bot has necessary permissions
 
-**Errori di permessi**: Assicurati che il bot abbia i ruoli appropriati nel server
+**Permission errors**: Make sure bot has appropriate roles in server
 
-## 📄 Licenza
+## 📄 License
 
-Progetto libero e open source. Usalo e modificalo come preferisci!
+Free and open source project. Use and modify as you prefer!
