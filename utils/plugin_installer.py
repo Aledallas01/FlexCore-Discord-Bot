@@ -24,6 +24,7 @@ class PluginInstaller:
     REPO_API_URL = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/"
     PLUGINS_DIR = "plugins"
     PLUGINS_CONFIG = "config/plugins.json"
+    REPO_API_URL2 = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{PLUGINS_DIR}"
     
     @staticmethod
     def get_available_plugins() -> List[Dict]:
