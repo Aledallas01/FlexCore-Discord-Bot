@@ -2,7 +2,7 @@
   "token": "YOUR_BOT_TOKEN_HERE",
   "prefix": "!",
   "owner_id": "YOUR_DISCORD_USER_ID",
-  "startscreen_type": "ui",
+  "startscreen_type": "TEXT or UI",
   "auto_update": true,
-  "language": "ita"
+  "language": "eng"
 }
